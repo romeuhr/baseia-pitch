@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BaseIA — Onde estamos hoje</title>
+<style>
+  :root{
+    --bg:#07090d;
+    --bg-soft:#0d1117;
+    --card:#11161f;
+    --card-2:#161d28;
+    --line:#212a38;
+    --txt:#e8edf5;
+    --muted:#8b97a8;
+    --muted-2:#5e6a7c;
+    --blue:#4d8bff;
+    --blue-soft:#1c2740;
+    --red:#ff5a5a;
+    --green:#46d39a;
+    --amber:#f5b544;
+    --radius:18px;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+
+  /* ---------- DECK ---------- */
+  .deck{position:fixed;inset:0;}
+  .slide{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:5.2vh 7vw;
+    opacity:0;visibility:hidden;
+    transform:translateY(18px) scale(.992);
+    transition:opacity .5s ease, transform .5s ease, visibility .5s;
+    overflow-y:auto;
+  }
+  .slide.active{opacity:1;visibility:visible;transform:none;z-index:2}
+  .slide.prev{transform:translateY(-18px) scale(.992)}
+  .inner{width:100%;max-width:var(--maxw);margin:0 auto}
+
+  /* ---------- TYPO ---------- */
+  .kicker{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--blue);font-weight:700;
+    border:1px solid var(--blue-soft);background:rgba(77,139,255,.06);
+    padding:7px 14px;border-radius:999px;margin-bottom:26px;
+  }
+  .kicker.amber{color:var(--amber);border-color:rgba(245,181,68,.25);background:rgba(245,181,68,.06)}
+  .kicker.green{color:var(--green);border-color:rgba(70,211,154,.22);background:rgba(70,211,154,.06)}
+  h1{font-size:clamp(2.4rem,5.2vw,4.4rem);line-height:1.02;letter-spacing:-.025em;font-weight:800}
+  h2{font-size:clamp(1.9rem,3.8vw,3.1rem);line-height:1.06;letter-spacing:-.02em;font-weight:800;margin-bottom:8px}
+  h3{font-size:1.18rem;font-weight:700;letter-spacing:-.01em}
+  .lead{font-size:clamp(1.05rem,1.7vw,1.35rem);color:var(--muted);line-height:1.5;max-width:48ch;margin-top:18px}
+  .blue{color:var(--blue)}
+  .red{color:var(--red)}
+  .green{color:var(--green)}
+  .amber{color:var(--amber)}
+  .sub{color:var(--muted);font-size:1rem;line-height:1.55}
+  p+p{margin-top:12px}
+
+  /* ---------- COMPONENTS ---------- */
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 22px;
+  }
+  .card.tight{padding:18px}
+  .stat{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;letter-spacing:-.02em;line-height:1}
+  .stat-label{color:var(--muted);font-size:.85rem;margin-top:9px;line-height:1.35}
+
+  /* phases diagram */
+  .phases{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:34px}
+  .phase{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:18px 14px;position:relative;transition:.25s;cursor:default;
+  }
+  .phase:hover{transform:translateY(-5px);border-color:var(--blue);background:var(--card-2);box-shadow:0 14px 40px -20px rgba(77,139,255,.6)}
+  .phase .num{font-size:.72rem;color:var(--muted-2);font-weight:700;letter-spacing:.1em}
+  .phase .pname{font-size:1rem;font-weight:700;margin:10px 0 8px}
+  .phase .pdesc{font-size:.82rem;color:var(--muted);line-height:1.4}
+  .phase .dot{position:absolute;top:16px;right:14px;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(70,211,154,.12)}
+
+  .badge{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;font-weight:600;color:var(--green);
+    background:rgba(70,211,154,.08);border:1px solid rgba(70,211,154,.2);padding:5px 11px;border-radius:999px}
+  .badge.amber{color:var(--amber);background:rgba(245,181,68,.08);border-color:rgba(245,181,68,.2)}
+  .badge.muted{color:var(--muted);background:rgba(139,151,168,.06);border-color:var(--line)}
+
+  /* product shots */
+  .shot{
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg-soft);
+    cursor:zoom-in;position:relative;transition:.25s;
+  }
+  .shot:hover{border-color:var(--blue);transform:translateY(-3px)}
+  .shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+  .shot .cap{position:absolute;left:0;right:0;bottom:0;padding:14px 16px 12px;
+    background:linear-gradient(to top,rgba(7,9,13,.96),rgba(7,9,13,0));
+    font-size:.82rem;color:var(--muted)}
+  .shot .cap b{color:var(--txt)}
+  .zoomhint{position:absolute;top:10px;right:10px;font-size:.68rem;color:var(--muted);
+    background:rgba(7,9,13,.7);border:1px solid var(--line);padding:3px 8px;border-radius:8px;backdrop-filter:blur(4px)}
+
+  .flow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:26px}
+  .flow .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;font-weight:600;font-size:.95rem}
+  .flow .arr{color:var(--blue);font-size:1.3rem;opacity:.7}
+
+  .list{list-style:none;margin-top:20px}
+  .list li{display:flex;gap:13px;padding:11px 0;border-bottom:1px solid var(--line);font-size:1.02rem;line-height:1.45}
+  .list li:last-child{border-bottom:0}
+  .list .mk{color:var(--blue);font-weight:800;flex-shrink:0}
+  .list .mk.g{color:var(--green)} .list .mk.r{color:var(--red)} .list .mk.a{color:var(--amber)}
+
+  .split{display:grid;grid-template-columns:1.05fr .95fr;gap:42px;align-items:center}
+  .split.rev{grid-template-columns:.95fr 1.05fr}
+  @media(max-width:920px){.split,.split.rev{grid-template-columns:1fr;gap:26px}}
+
+  .quote{font-size:clamp(1.3rem,2.5vw,1.9rem);line-height:1.32;font-weight:600;letter-spacing:-.01em}
+  .quote .hl{color:var(--blue)}
+
+  .tl{position:relative;margin-top:26px;padding-left:6px}
+  .tl .row{display:grid;grid-template-columns:120px 1fr;gap:18px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .tl .row:last-child{border-bottom:0}
+  .tl .when{color:var(--muted);font-size:.9rem;font-weight:600;padding-top:2px}
+  .tl .what b{display:block;margin-bottom:3px}
+  .tl .what span{color:var(--muted);font-size:.92rem;line-height:1.4}
+
+  .ask{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
+  .ask .card h3{margin-bottom:8px}
+  .ask .card p{color:var(--muted);font-size:.92rem;line-height:1.45}
+  .ask .ico{font-size:1.5rem;margin-bottom:12px;display:block}
+
+  /* big number on case */
+  .bignum{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .bignum .v{font-size:clamp(2.6rem,6vw,4.6rem);font-weight:800;letter-spacing:-.03em;line-height:1}
+  .bignum .u{color:var(--muted);font-size:1.05rem;max-width:22ch;line-height:1.4}
+
+  .note{margin-top:22px;font-size:.84rem;color:var(--muted-2);border-left:2px solid var(--line);padding-left:14px;line-height:1.5}
+
+  /* ---------- CHROME ---------- */
+  .topbar{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;
+    justify-content:space-between;padding:0 26px;z-index:30;pointer-events:none}
+  .brand{font-weight:800;letter-spacing:-.02em;font-size:1.05rem}
+  .brand span{color:var(--muted);font-weight:500;font-size:.85rem;margin-left:7px}
+  .progress{position:fixed;top:0;left:0;height:3px;background:var(--blue);z-index:40;transition:width .5s ease;
+    box-shadow:0 0 14px rgba(77,139,255,.7)}
+  .nav{position:fixed;bottom:22px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:16px;z-index:30}
+  .dots{display:flex;gap:8px}
+  .dot-nav{width:8px;height:8px;border-radius:50%;background:var(--line);border:0;cursor:pointer;transition:.25s;padding:0}
+  .dot-nav.on{background:var(--blue);transform:scale(1.35)}
+  .arrows{display:flex;gap:8px;pointer-events:auto}
+  .arrows button{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--card);
+    color:var(--txt);cursor:pointer;font-size:1.1rem;transition:.2s;display:flex;align-items:center;justify-content:center}
+  .arrows button:hover{border-color:var(--blue);background:var(--card-2)}
+  .counter{position:fixed;bottom:26px;right:26px;color:var(--muted-2);font-size:.82rem;z-index:30;font-variant-numeric:tabular-nums}
+  .counter b{color:var(--txt)}
+
+  /* lightbox */
+  .lb{position:fixed;inset:0;background:rgba(3,5,8,.93);z-index:100;display:none;
+    align-items:center;justify-content:center;padding:4vh 4vw;cursor:zoom-out;backdrop-filter:blur(6px)}
+  .lb.on{display:flex}
+  .lb img{max-width:100%;max-height:92vh;border-radius:12px;border:1px solid var(--line);box-shadow:0 30px 90px -30px #000}
+  .lb .close{position:absolute;top:20px;right:26px;color:var(--muted);font-size:1rem}
+
+  .hint{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);color:var(--muted-2);
+    font-size:.78rem;z-index:30;opacity:1;transition:opacity .6s;text-align:center}
+  .hint.hide{opacity:0}
+  kbd{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1px 7px;font-size:.78rem;font-family:inherit}
+
+  @media(max-width:920px){
+    .g4{grid-template-columns:repeat(2,1fr)}
+    .g3{grid-template-columns:1fr}
+    .phases{grid-template-columns:repeat(2,1fr)}
+    .ask{grid-template-columns:1fr}
+    .slide{padding:8vh 7vw 12vh}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="topbar">
+  <div class="brand">BaseIA <span>processos · estado real · jun/2026</span></div>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 — CAPA -->
+  <section class="slide active">
+    <div class="inner">
+      <div class="kicker">● Onde estamos hoje — sem inflar</div>
+      <h1>Conversa vira <span class="blue">processo</span>.<br/>Processo vira automação<br/>com <span class="blue">ROI medido</span>.</h1>
+      <p class="lead">A BaseIA pega o que está na cabeça das pessoas — uma gravação de celular — e devolve o processo estruturado, diagnosticado e com automações de valor mensurável. Já rodando com cliente pagante.</p>
+      <div style="margin-top:38px;display:flex;gap:26px;flex-wrap:wrap;align-items:center">
+        <span class="badge">● Produto em produção</span>
+        <span class="badge muted">1º cliente pago — rede premium de food service</span>
+        <span class="badge muted">Romeu · Nelson · César</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 — PROBLEMA -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker amber">● O problema</div>
+      <h2>O processo de uma empresa<br/>mora na <span class="amber">cabeça das pessoas</span>.</h2>
+      <div class="grid g3" style="margin-top:38px">
+        <div class="card">
+          <div class="stat amber">Invisível</div>
+          <div class="stat-label">Ninguém documentou. Quando a pessoa sai, o processo sai junto. Cada unidade faz de um jeito.</div>
+        </div>
+        <div class="card">
+          <div class="stat amber">Caro de mapear</div>
+          <div class="stat-label">Consultoria tradicional cobra caro, demora meses e entrega um PDF que ninguém atualiza.</div>
+        </div>
+        <div class="card">
+          <div class="stat amber">Automação no escuro</div>
+          <div class="stat-label">Sem o processo claro, automatizar é chute. Ninguém sabe quanto se ganha — então ninguém investe.</div>
+        </div>
+      </div>
+      <p class="lead" style="margin-top:34px">Resultado: empresas grandes operam fluxos de milhões em planilha e WhatsApp, sabendo que perdem dinheiro — sem conseguir provar onde.</p>
+    </div>
+  </section>
+
+  <!-- 3 — O QUE É -->
+  <section class="slide">
+    <div class="inner">
+      <div class="split">
+        <div>
+          <div class="kicker">● A máquina</div>
+          <h2>Grava. Estrutura.<br/>Mede. <span class="blue">Automatiza.</span></h2>
+          <div class="flow">
+            <div class="step">🎙️ Áudio / vídeo</div><span class="arr">→</span>
+            <div class="step">🧠 IA estrutura</div><span class="arr">→</span>
+            <div class="step">✅ Cliente valida</div><span class="arr">→</span>
+            <div class="step">⚙️ Automação + R$</div>
+          </div>
+          <p class="lead">O cliente grava o processo no celular. A IA extrai cada etapa, calcula custos, mapeia o que dá pra automatizar — e entrega com valor em R$/ano e % automatizado. <span class="blue">Medido, não estimado.</span></p>
+        </div>
+        <div class="shot" data-full="assets/01-captura.png">
+          <span class="zoomhint">clique p/ ampliar</span>
+          <img src="assets/01-captura.png" alt="Tela de entrada do produto" style="height:62vh"/>
+          <div class="cap"><b>Entrada real do produto.</b> O cliente só grava e manda. Sem formulário de 40 campos.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 — 6 FASES -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker green">● O produto, ponta a ponta</div>
+      <h2>Seis fases. <span class="green">Todas no ar.</span></h2>
+      <p class="sub" style="margin-top:10px;max-width:60ch">Um processo do cliente atravessa as seis etapas dentro de um painel interativo. O backend das seis já está em produção — passe o mouse.</p>
+      <div class="phases">
+        <div class="phase"><span class="dot"></span><div class="num">FASE 1</div><div class="pname">Captura</div><div class="pdesc">Cliente manda áudio, vídeo, link ou planilha. Entrada multi-formato.</div></div>
+        <div class="phase"><span class="dot"></span><div class="num">FASE 2</div><div class="pname">Diagnóstico</div><div class="pdesc">IA extrai etapas, dores e custos — com citação literal da fala.</div></div>
+        <div class="phase"><span class="dot"></span><div class="num">FASE 3</div><div class="pname">Enriquecimento</div><div class="pdesc">Quiz dinâmico captura volume, tempo e custo. Site ou WhatsApp.</div></div>
+        <div class="phase"><span class="dot"></span><div class="num">FASE 4</div><div class="pname">Validação visual</div><div class="pdesc">Cliente corrige o fluxograma na tela. Pins e anotações.</div></div>
+        <div class="phase"><span class="dot"></span><div class="num">FASE 5</div><div class="pname">Planejamento</div><div class="pdesc">Oportunidades viram atividades, ranqueadas por impacto × esforço.</div></div>
+        <div class="phase"><span class="dot"></span><div class="num">FASE 6</div><div class="pname">Execução & valor</div><div class="pdesc">Automação entregue + valor medido em R$/ano e % automatizado.</div></div>
+      </div>
+      <p class="note">Estado honesto: fases 1–4 com interface viva; fases 5–6 com backend em produção (tags <code>prod-2026-06-15b/c</code>), UI de gestão ainda em construção. Detalhe no slide 10.</p>
+    </div>
+  </section>
+
+  <!-- 5 — DIAGNÓSTICO -->
+  <section class="slide">
+    <div class="inner">
+      <div class="split rev">
+        <div class="shot" data-full="assets/02-diagnostico.png">
+          <span class="zoomhint">clique p/ ampliar</span>
+          <img src="assets/02-diagnostico.png" alt="Diagnóstico com indicadores" style="height:58vh"/>
+          <div class="cap"><b>Diagnóstico gerado pela IA.</b> Score de automação, etapas mapeadas, horas/semana. <i>Interface real — números de demonstração.</i></div>
+        </div>
+        <div>
+          <div class="kicker">● Fase 2 — Diagnóstico</div>
+          <h2>O custo do manual,<br/>na <span class="blue">cara</span>.</h2>
+          <p class="lead">Em ~5 minutos, o cliente vê o custo mensal do trabalho manual, o score de automação, quantas etapas dão pra automatizar e quantas horas/semana se perde. Cada número é rastreável até a fala que o gerou.</p>
+          <ul class="list">
+            <li><span class="mk">↳</span> Custo do trabalho manual identificado</li>
+            <li><span class="mk g">↳</span> Score de automação por processo</li>
+            <li><span class="mk a">↳</span> Etapas automatizáveis destacadas</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 — AS-IS + FLUXOGRAMA -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">● Fases 2 & 4 — Mapeamento e validação</div>
+      <h2>Cada etapa, com <span class="blue">evidência</span>. O antes e o depois, lado a lado.</h2>
+      <div class="grid g2" style="margin-top:26px">
+        <div class="shot" data-full="assets/03-asis.png">
+          <span class="zoomhint">clique p/ ampliar</span>
+          <img src="assets/03-asis.png" alt="Etapas AS-IS mapeadas" style="height:46vh"/>
+          <div class="cap"><b>AS-IS estruturado.</b> Cada passo do processo atual, onde acontece, e se é automatizável.</div>
+        </div>
+        <div class="shot" data-full="assets/04-fluxograma.png">
+          <span class="zoomhint">clique p/ ampliar</span>
+          <img src="assets/04-fluxograma.png" alt="Fluxograma antes e depois" style="height:46vh"/>
+          <div class="cap"><b>Antes × depois.</b> Fluxograma do processo atual versus o automatizado — o cliente valida na tela.</div>
+        </div>
+      </div>
+      <p class="note">Tudo gerado a partir de uma gravação. O cliente não escreve documentação — ele corrige o que a IA entendeu.</p>
+    </div>
+  </section>
+
+  <!-- 7 — OPORTUNIDADES -->
+  <section class="slide">
+    <div class="inner">
+      <div class="split rev">
+        <div class="shot" data-full="assets/05-oportunidades.png">
+          <span class="zoomhint">clique p/ ampliar</span>
+          <img src="assets/05-oportunidades.png" alt="Oportunidades rankeadas" style="height:58vh"/>
+          <div class="cap"><b>Oportunidades ranqueadas.</b> Cada uma com economia estimada, valor em R$ e marcação de <i>quick win</i>.</div>
+        </div>
+        <div>
+          <div class="kicker">● Fase 5 — Planejamento</div>
+          <h2>O que automatizar —<br/>e <span class="blue">por onde começar</span>.</h2>
+          <p class="lead">A IA não só lista o que dá pra automatizar: ela ranqueia por impacto, separa <span class="green">quick wins</span> do que é estrutural, e amarra cada item a um valor em R$. O cliente decide com número na mão.</p>
+          <ul class="list">
+            <li><span class="mk g">✦</span> <b>Quick wins</b> primeiro — valor rápido, esforço baixo</li>
+            <li><span class="mk">↳</span> Núcleo — o que muda o jogo</li>
+            <li><span class="mk a">↳</span> Estrutural — depende de ERP / sistema</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 — CASE -->
+
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker green">● O case — cliente real, pagante</div>
+      <h2>Uma <span class="blue">rede premium de steakhouses</span></h2>
+      <p class="sub" style="margin-top:8px;max-width:62ch">Grupo de restaurantes de alto padrão, sete unidades em quatro países. A BaseIA está dentro do fluxo de compras deles. <i>(Cliente sob confidencialidade.)</i></p>
+      <div class="grid g4" style="margin-top:32px">
+        <div class="card"><div class="stat blue">R$ 71<span style="font-size:1.2rem"> MM</span></div><div class="stat-label">por ano em compras — o tamanho do problema</div></div>
+        <div class="card"><div class="stat">~200</div><div class="stat-label">fornecedores ativos</div></div>
+        <div class="card"><div class="stat">7 <span style="font-size:1.2rem">unidades</span></div><div class="stat-label">em 4 países, 2 continentes</div></div>
+        <div class="card"><div class="stat green">3</div><div class="stat-label">processos reais já capturados em produção</div></div>
+      </div>
+      <div class="split" style="margin-top:34px;align-items:start">
+        <div>
+          <h3 style="margin-bottom:12px">Como entramos</h3>
+          <p class="sub">Nosso sócio-consultor está <b style="color:var(--txt)">in loco</b> no cliente, junto ao CFO. Ele grava as conversas com os operadores. A ferramenta extrai o diagnóstico. O cliente refina. Nós entregamos a automação.</p>
+        </div>
+        <div>
+          <h3 style="margin-bottom:12px">Os 3 processos no ar</h3>
+          <ul class="list" style="margin-top:6px">
+            <li><span class="mk g">●</span> Rotina de Eventos <span class="badge muted" style="margin-left:auto">v2</span></li>
+            <li><span class="mk g">●</span> Compra Externa <span class="badge muted" style="margin-left:auto">v1</span></li>
+            <li><span class="mk g">●</span> Conciliação Bancária <span class="badge muted" style="margin-left:auto">v1</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Próximo marco: <b>24/06</b> — conversa sobre o ERP enterprise futuro do grupo. Estamos na mesa onde a decisão de sistema é tomada.</p>
+    </div>
+  </section>
+
+  <!-- 9 — PROVA -->
+
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker green">● Prova — 1ª validação real em produção · 15/06</div>
+      <h2>O dia em que funcionou<br/>com <span class="blue">cliente de verdade</span>.</h2>
+      <div class="split" style="margin-top:30px;align-items:start">
+        <div>
+          <p class="lead" style="margin-top:0">Nosso consultor abriu a página, gravou o processo de eventos e anexou <b style="color:var(--txt)">duas fotos de planilha</b>. A IA leu as imagens e extraiu sozinha:</p>
+          <div class="grid g3" style="margin-top:22px">
+            <div class="card tight"><div class="stat blue" style="font-size:1.8rem">520</div><div class="stat-label">eventos/ano</div></div>
+            <div class="card tight"><div class="stat" style="font-size:1.8rem">4</div><div class="stat-label">casas</div></div>
+            <div class="card tight"><div class="stat" style="font-size:1.8rem">R$43</div><div class="stat-label">custo/hora</div></div>
+          </div>
+          <p class="sub" style="margin-top:20px">Entrada multi-formato + leitura de imagem por IA, <b style="color:var(--green)">funcionando em produção</b>, com dado real de cliente. Não é demo.</p>
+        </div>
+        <div class="card" style="background:var(--card-2)">
+          <div class="badge amber" style="margin-bottom:14px">⚠ Honestidade técnica</div>
+          <h3 style="margin-bottom:12px">Achamos um bug — e por que isso é bom</h3>
+          <p class="sub">O primeiro cálculo veio inflado em 60× (tratou minutos como horas). <b style="color:var(--txt)">Pegamos, rastreamos a causa-raiz no prompt e consertamos em três camadas.</b></p>
+          <div style="margin-top:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <span class="sub" style="text-decoration:line-through;color:var(--red)">R$ 134.160/ano</span>
+            <span class="arr" style="color:var(--blue)">→</span>
+            <span class="stat green" style="font-size:1.6rem">R$ 2.253/ano</span>
+          </div>
+          <p class="note" style="margin-top:16px;border-color:var(--green)">Agora os próximos diagnósticos calculam certo sozinhos. Sistema que se corrige na raiz &gt; sistema que parece perfeito numa demo ensaiada.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 — ESTADO REAL -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker amber">● O retrato honesto — jun/2026</div>
+      <h2>O que está <span class="green">no ar</span>. O que <span class="amber">falta</span>.</h2>
+      <div class="split" style="margin-top:30px;align-items:start">
+        <div class="card" style="border-color:rgba(70,211,154,.25)">
+          <div class="badge" style="margin-bottom:16px">● No ar</div>
+          <ul class="list">
+            <li><span class="mk g">✓</span> Captura multi-formato + leitura de imagem</li>
+            <li><span class="mk g">✓</span> Diagnóstico com evidência literal</li>
+            <li><span class="mk g">✓</span> Quiz de enriquecimento (site + WhatsApp)</li>
+            <li><span class="mk g">✓</span> Backend das 6 fases em produção</li>
+            <li><span class="mk g">✓</span> Cliente pagante usando de verdade</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(245,181,68,.25)">
+          <div class="badge amber" style="margin-bottom:16px">● Em construção</div>
+          <ul class="list">
+            <li><span class="mk a">⋯</span> UI de gestão das fases 5–6 (clique p/ planejar)</li>
+            <li><span class="mk a">⋯</span> Editor visual exercitado em processo real (v2)</li>
+            <li><span class="mk a">⋯</span> Biblioteca de templates reusáveis entre clientes</li>
+            <li><span class="mk a">⋯</span> Carga humana decrescente por entrega (instrumentada)</li>
+          </ul>
+        </div>
+      </div>
+      <p class="lead" style="margin-top:30px;max-width:64ch">Não é vaporware nem é produto maduro. É um <span class="blue">produto que entrega valor hoje</span>, com um cliente que paga, e um caminho claro do que vem a seguir.</p>
+    </div>
+  </section>
+
+  <!-- 11 — VISÃO + ASK -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">● Pra onde vai</div>
+      <h2>De serviço in loco<br/>a <span class="blue">máquina que escala</span>.</h2>
+      <div class="tl">
+        <div class="row"><div class="when">Hoje</div><div class="what"><b>In loco</b><span>Nosso consultor no campo, gravando processos. Cada intervenção vira artefato e template. — É o cliente atual agora.</span></div></div>
+        <div class="row"><div class="when">Próximo</div><div class="what"><b>Pilotagem remota</b><span>BaseIA pilota à distância, consultor só apoia. Carga humana cai, biblioteca cresce.</span></div></div>
+        <div class="row"><div class="when">Visão</div><div class="what"><b>A distância, com IA</b><span>Biblioteca + IAs próprias entregam; humano só onde agrega. Valor entregue medido em R$/ano em uso.</span></div></div>
+      </div>
+
+      <div class="kicker" style="margin-top:42px">● O que eu quero de você</div>
+      <div class="ask">
+        <div class="card"><span class="ico">🎯</span><h3>Olhar crítico</h3><p>Você vê processos de empresa grande todo dia. Onde esse pitch quebraria numa mesa de operação séria?</p></div>
+        <div class="card"><span class="ico">🔗</span><h3>Portas</h3><p>Quem na sua rede tem o problema do nosso cliente — fluxo de milhões em planilha — e toparia ver uma demo?</p></div>
+        <div class="card"><span class="ico">📐</span><h3>Modelo</h3><p>Como você precificaria e empacotaria isso pra escalar além de "consultoria com IA"?</p></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- CHROME -->
+<div class="nav">
+  <div class="arrows"><button id="prev" aria-label="anterior">‹</button><button id="next" aria-label="próximo">›</button></div>
+  <div class="dots" id="dots"></div>
+</div>
+<div class="counter"><b id="cur">01</b> / <span id="tot">11</span></div>
+<div class="hint" id="hint">use <kbd>←</kbd> <kbd>→</kbd> ou <kbd>espaço</kbd> para navegar · clique nos prints para ampliar</div>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb"><span class="close">✕ fechar</span><img id="lbimg" src="" alt=""/></div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const total=slides.length;
+  let i=0;
+  const progress=document.getElementById('progress');
+  const cur=document.getElementById('cur');
+  const dotsWrap=document.getElementById('dots');
+  document.getElementById('tot').textContent=String(total).padStart(2,'0');
+
+  slides.forEach((_,n)=>{
+    const b=document.createElement('button');
+    b.className='dot-nav'+(n===0?' on':'');
+    b.onclick=()=>go(n);
+    dotsWrap.appendChild(b);
+  });
+  const dots=[...dotsWrap.children];
+
+  function go(n){
+    if(n<0||n>=total) return;
+    slides[i].classList.remove('active');
+    slides[i].classList.toggle('prev', n>i);
+    i=n;
+    slides.forEach((s,k)=>{ if(k<i) s.classList.add('prev'); else s.classList.remove('prev'); });
+    slides[i].classList.add('active');
+    slides[i].scrollTop=0;
+    progress.style.width=((i+1)/total*100)+'%';
+    cur.textContent=String(i+1).padStart(2,'0');
+    dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+  }
+  function next(){go(Math.min(i+1,total-1))}
+  function prev(){go(Math.max(i-1,0))}
+
+  document.getElementById('next').onclick=next;
+  document.getElementById('prev').onclick=prev;
+
+  const hint=document.getElementById('hint');
+  let hinted=false;
+  document.addEventListener('keydown',e=>{
+    if(lb.classList.contains('on')){ if(e.key==='Escape') closeLb(); return; }
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();next();}
+    else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==='Home'){go(0)} else if(e.key==='End'){go(total-1)}
+    if(!hinted){hint.classList.add('hide');hinted=true;}
+  });
+  setTimeout(()=>hint.classList.add('hide'),6000);
+
+  // lightbox
+  const lb=document.getElementById('lb'), lbimg=document.getElementById('lbimg');
+  function openLb(src){lbimg.src=src;lb.classList.add('on');}
+  function closeLb(){lb.classList.remove('on');}
+  document.querySelectorAll('.shot').forEach(s=>{
+    s.addEventListener('click',()=>openLb(s.dataset.full));
+  });
+  lb.addEventListener('click',closeLb);
+
+  progress.style.width=(1/total*100)+'%';
+
+  // swipe (touch)
+  let tx=0;
+  document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>60){ dx<0?next():prev(); }
+  },{passive:true});
+</script>
+</body>
+</html>
