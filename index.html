@@ -36,7 +36,7 @@
   .deck{position:fixed;inset:0;}
   .slide{
     position:absolute;inset:0;
-    display:flex;flex-direction:column;justify-content:center;
+    display:flex;flex-direction:column;
     padding:5.2vh 7vw;
     opacity:0;visibility:hidden;
     transform:translateY(18px) scale(.992);
@@ -45,7 +45,8 @@
   }
   .slide.active{opacity:1;visibility:visible;transform:none;z-index:2}
   .slide.prev{transform:translateY(-18px) scale(.992)}
-  .inner{width:100%;max-width:var(--maxw);margin:0 auto}
+  /* margin:auto (e não justify-content:center) — centraliza sem tornar o topo inalcançável quando o conteúdo estoura a altura */
+  .inner{width:100%;max-width:var(--maxw);margin:auto}
 
   /* ---------- TYPO ---------- */
   .kicker{
@@ -183,7 +184,11 @@
     .g3{grid-template-columns:1fr}
     .phases{grid-template-columns:repeat(2,1fr)}
     .ask{grid-template-columns:1fr}
-    .slide{padding:8vh 7vw 12vh}
+    .slide{padding:8vh 7vw 14vh}
+    .shot img{height:auto !important;max-height:42vh}
+  }
+  @media(max-width:600px){
+    .counter{display:none}
   }
 </style>
 </head>
@@ -267,8 +272,8 @@
         <div class="phase"><span class="dot"></span><div class="num">FASE 2</div><div class="pname">Diagnóstico</div><div class="pdesc">IA extrai etapas, dores e custos — com citação literal da fala.</div></div>
         <div class="phase"><span class="dot"></span><div class="num">FASE 3</div><div class="pname">Enriquecimento</div><div class="pdesc">Quiz dinâmico captura volume, tempo e custo — no seu link.</div></div>
         <div class="phase"><span class="dot"></span><div class="num">FASE 4</div><div class="pname">Validação visual</div><div class="pdesc">Você corrige o fluxograma na tela. Pins e anotações.</div></div>
-        <div class="phase"><span class="dot"></span><div class="num">FASE 5</div><div class="pname">Planejamento</div><div class="pdesc">Oportunidades viram atividades, ranqueadas por impacto × esforço.</div></div>
-        <div class="phase"><span class="dot"></span><div class="num">FASE 6</div><div class="pname">Execução & valor</div><div class="pdesc">Plano aprovado vira execução acompanhada — responsável, prioridade e valor por atividade.</div></div>
+        <div class="phase"><span class="dot"></span><div class="num">FASE 5</div><div class="pname">Planejamento</div><div class="pdesc">Oportunidades viram atividades ranqueadas — e você marca o que vem primeiro.</div></div>
+        <div class="phase"><span class="dot"></span><div class="num">FASE 6</div><div class="pname">Execução & valor</div><div class="pdesc">Você aprova o plano no painel e acompanha a execução — responsável, prioridade e valor por atividade.</div></div>
       </div>
       <p class="note">As seis fases já rodam em produção, com cliente pagante usando de verdade.</p>
     </div>
@@ -339,7 +344,7 @@
         <div>
           <div class="kicker">● Fase 5 — Planejamento</div>
           <h2>O que automatizar —<br/>e <span class="blue">por onde começar</span>.</h2>
-          <p class="lead">A IA não só lista o que dá pra automatizar: ela ranqueia por impacto, separa <span class="green">quick wins</span> do que é estrutural, e amarra cada item a um valor em R$. Você decide com número na mão.</p>
+          <p class="lead">A IA não só lista o que dá pra automatizar: ela ranqueia por impacto, separa <span class="green">quick wins</span> do que é estrutural, e amarra cada item a um valor em R$. Você decide com número na mão — marca a prioridade e aprova o plano direto no painel.</p>
           <ul class="list">
             <li><span class="mk g">✦</span> <b>Quick wins</b> primeiro — valor rápido, esforço baixo</li>
             <li><span class="mk">↳</span> Núcleo — o que muda o jogo</li>
@@ -389,9 +394,9 @@
         <div class="card"><div class="badge" style="margin-bottom:10px">✓ Captura</div><div class="stat-label">Entrada multi-formato — gravação de tela, áudio, vídeo, foto e planilha — com leitura de imagem por IA.</div></div>
         <div class="card"><div class="badge" style="margin-bottom:10px">✓ Diagnóstico</div><div class="stat-label">Mapa do processo gerado pela IA, com evidência literal da fala que originou cada número.</div></div>
         <div class="card"><div class="badge" style="margin-bottom:10px">✓ Enriquecimento &amp; fluxos</div><div class="stat-label">Quiz dinâmico no seu link e fluxograma atual × proposto, que você valida na tela.</div></div>
-        <div class="card"><div class="badge" style="margin-bottom:10px">✓ Login e papéis de acesso</div><div class="stat-label">Acesso por link mágico, papéis por empresa — dono, admin, membro, leitura. O painel é operado logado.</div></div>
-        <div class="card"><div class="badge" style="margin-bottom:10px">✓ Gestão da execução</div><div class="stat-label">Atividade com responsável, priorização e aprovação de plano — direto no painel, por quem decide.</div></div>
-        <div class="card"><div class="badge" style="margin-bottom:10px">✓ Qualidade</div><div class="stat-label">Mais de 1.000 testes automatizados cobrindo o backend, com ambiente de homologação separado da produção.</div></div>
+        <div class="card"><div class="badge" style="margin-bottom:10px">✓ Login e papéis de acesso</div><div class="stat-label">Convite por e-mail, acesso por link mágico e papéis por empresa — dono, admin, membro, leitura. Cada um vê o painel pelo seu papel.</div></div>
+        <div class="card"><div class="badge" style="margin-bottom:10px">✓ Gestão da execução</div><div class="stat-label">Você prioriza as oportunidades, aprova o plano e acompanha cada atividade — com responsável e valor — direto no painel.</div></div>
+        <div class="card"><div class="badge" style="margin-bottom:10px">✓ Qualidade &amp; segurança</div><div class="stat-label">Mais de 1.000 testes automatizados, homologação separada da produção — e auditoria adversarial de segurança, com os achados corrigidos em produção.</div></div>
       </div>
       <p class="lead" style="margin-top:30px;max-width:64ch">Um <span class="blue">produto que entrega valor hoje</span> — com um cliente pagante usando de verdade, dentro do fluxo de compras.</p>
     </div>
@@ -446,6 +451,9 @@
   document.getElementById('prev').onclick=prev;
 
   const hint=document.getElementById('hint');
+  if(matchMedia('(pointer:coarse)').matches){
+    hint.innerHTML='deslize para os lados para navegar · toque nos prints para ampliar';
+  }
   let hinted=false;
   document.addEventListener('keydown',e=>{
     if(lb.classList.contains('on')){ if(e.key==='Escape') closeLb(); return; }
@@ -467,12 +475,13 @@
 
   progress.style.width=(1/total*100)+'%';
 
-  // swipe (touch)
-  let tx=0;
-  document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX,{passive:true});
+  // swipe (touch) — só troca de slide em gesto claramente horizontal, pra não conflitar com o scroll vertical
+  let tx=0,ty=0;
+  document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;ty=e.changedTouches[0].clientY;},{passive:true});
   document.addEventListener('touchend',e=>{
     const dx=e.changedTouches[0].clientX-tx;
-    if(Math.abs(dx)>60){ dx<0?next():prev(); }
+    const dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5){ dx<0?next():prev(); }
   },{passive:true});
 </script>
 </body>
