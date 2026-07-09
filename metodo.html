@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BaseIA — Do processo ao valor</title>
+<meta name="description" content="Como a BaseIA transforma um processo narrado em vídeo em atividades com dono, valor em reais e adoção medida — e como testar com um processo seu em 3 passos.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='28' height='28' x='0' y='4' rx='3' fill='%23155343'/%3E%3Crect x='22' y='0' width='10' height='10' fill='%23C8E651'/%3E%3Ctext x='14' y='24' font-family='Arial' font-size='16' font-weight='900' fill='white' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="assets/fonts/archivo-var-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/literata-var-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Archivo';src:url('assets/fonts/archivo-var-latin.woff2') format('woff2-variations');
+font-weight:400 900;font-stretch:100% 125%;font-style:normal;font-display:swap}
+@font-face{font-family:'Literata';src:url('assets/fonts/literata-var-latin.woff2') format('woff2-variations');
+font-weight:400 600;font-style:normal;font-display:swap}
+:root{
+  --papel:#F3F4F1;
+  --folha:#FBFCFA;
+  --tinta:#1A211D;
+  --tinta-2:#485049;
+  --tinta-3:#5E6862;
+  --verde:#155343;
+  --verde-escuro:#0C3A2E;
+  --verde-linha:#C3D3CA;
+  --verde-wash:#E7EFE9;
+  --vivo:#C8E651;
+  --ocre:#7A5210;
+  --ocre-wash:#F6EFDF;
+  --ocre-linha:#E2D2AC;
+  --papel-ocre:#FDF8ED;
+  --vermelho:#8C3A2B;
+  --vermelho-wash:#F6E8E2;
+  --regua:#D7DAD3;
+  --regua-suave:#E3E6E0;
+  --regua-leader:#B4BAB2;
+  --no-borda:#8A968E;
+  --palco:#1A211D;
+  --palco-borda:#37413A;
+  --palco-texto:#EDF1EC;
+  --palco-texto-2:#ADB8AF;
+  --sans:'Archivo','Archivo Fallback',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --serif:'Literata','Literata Fallback','Iowan Old Style',Georgia,serif;
+  --t-micro:.6875rem;
+  --t-caption:.75rem;
+  --t-small:.8125rem;
+  --t-ui:.875rem;
+  --t-body:1rem;
+  --t-lead:1.125rem;
+  --t-sub:clamp(1.375rem,3vw,1.75rem);
+  --t-num:clamp(1.625rem,3.6vw,2.375rem);
+  --t-display:clamp(2.5rem,7.5vw,4.75rem);
+  --track:.14em;
+}
+@font-face{font-family:'Archivo Fallback';src:local('Arial');
+size-adjust:105.53%;ascent-override:83.2%;descent-override:19.9%;line-gap-override:0%}
+@font-face{font-family:'Literata Fallback';src:local('Georgia');
+size-adjust:110.81%;ascent-override:106.22%;descent-override:27.79%;line-gap-override:0%}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--sans);font-stretch:100%;background:var(--papel);color:var(--tinta);font-size:var(--t-body);line-height:1.6}
+.hero h1,.sec-head h2,.cta p:not(.cta-sub):not(.cta-rotulo){font-stretch:125%}
+::selection{background:var(--vivo);color:var(--tinta)}
+:focus-visible{outline:2.5px solid var(--verde);outline-offset:2px;border-radius:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.tnum{font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1}
+
+.page{max-width:880px;margin:0 auto;padding:0 24px 64px}
+
+/* réguas — dupla 2/1 no topo, 1/2 espelhada no rodapé */
+.regua-topo{border-top:2px solid var(--tinta);position:relative;margin-top:28px}
+.regua-topo::after{content:"";display:block;border-top:1px solid var(--tinta);margin-top:3px}
+.regua-rodape{border-top:1px solid var(--tinta);position:relative;margin-top:56px}
+.regua-rodape::after{content:"";display:block;border-top:2px solid var(--tinta);margin-top:3px}
+
+header.masthead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0 0;flex-wrap:wrap}
+.chancela{display:inline-flex;align-items:center;position:relative}
+.chancela .bloco{background:var(--verde);color:#fff;font-weight:900;letter-spacing:.06em;font-size:var(--t-ui);padding:7px 12px 7px 11px;border-radius:2px;text-transform:uppercase}
+.chancela .mordida{width:10px;height:10px;background:var(--vivo);position:absolute;top:-4px;right:-4px}
+.masthead .rotulo{font-size:var(--t-micro);letter-spacing:var(--track);text-transform:uppercase;color:var(--tinta-3)}
+
+.hero{padding:56px 0 12px}
+.hero .eyebrow{font-size:var(--t-caption);letter-spacing:var(--track);text-transform:uppercase;color:var(--verde);font-weight:700;margin-bottom:18px}
+.hero h1{font-size:var(--t-display);line-height:.98;font-weight:900;text-transform:uppercase;letter-spacing:-.015em;text-wrap:balance;max-width:15ch}
+.hero h1 .marca{background:linear-gradient(transparent 58%,var(--vivo) 58%)}
+.hero .lead{font-size:var(--t-lead);color:var(--tinta-2);max-width:56ch;margin-top:22px}
+.hero .lead strong{color:var(--tinta)}
+
+section{margin-top:56px}
+.sec-head{display:flex;align-items:baseline;gap:14px;border-top:1px solid var(--regua);padding-top:14px;margin-bottom:22px}
+.sec-head .num{font-family:var(--serif);font-size:var(--t-ui);color:var(--tinta-3)}
+.sec-head h2{font-size:var(--t-sub);font-weight:900;text-transform:uppercase;letter-spacing:-.01em;line-height:1.15;text-wrap:balance}
+.sec-intro{color:var(--tinta-2);max-width:62ch;margin-bottom:22px}
+.sec-intro strong{color:var(--tinta)}
+
+/* palco escuro — fluxo das 6 fases */
+.palco{background:var(--palco);border:1px solid var(--palco-borda);border-radius:4px;padding:26px 22px 22px;overflow-x:auto}
+.palco .palco-rotulo{font-size:var(--t-micro);letter-spacing:var(--track);text-transform:uppercase;color:var(--palco-texto-2);margin-bottom:18px}
+.fluxo{display:flex;align-items:stretch;gap:0;min-width:640px}
+.fase{flex:1;display:flex;flex-direction:column;position:relative;padding-right:26px}
+.fase:last-child{padding-right:0}
+.fase::after{content:"";position:absolute;right:6px;top:26px;width:14px;height:1.5px;background:var(--palco-texto-2)}
+.fase:last-child::after{display:none}
+.fase .no{background:var(--folha);color:var(--tinta);border:1px solid var(--no-borda);border-radius:5px;padding:10px 10px 9px;font-size:var(--t-small);font-weight:700;line-height:1.3;position:relative;min-height:58px;display:flex;align-items:center}
+.fase .no .fnum{position:absolute;top:-9px;left:8px;background:var(--palco);color:var(--palco-texto);font-family:var(--serif);font-size:var(--t-micro);padding:0 5px;line-height:1.4}
+.fase .quem{font-size:var(--t-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--palco-texto-2);margin-top:9px;padding-left:2px}
+.fase .no.vivo-tag::before{content:"IA";position:absolute;top:-9px;right:8px;background:var(--vivo);color:var(--tinta);font-size:var(--t-micro);font-weight:900;letter-spacing:.06em;padding:0 5px;line-height:1.5;border-radius:2px}
+.palco .palco-nota{font-size:var(--t-small);color:var(--palco-texto-2);margin-top:18px;max-width:70ch}
+.palco .palco-nota em{color:var(--palco-texto);font-style:normal;font-weight:700}
+
+/* decomposição */
+.arvore{display:flex;flex-direction:column;gap:0;max-width:640px}
+.nivel{display:flex;align-items:baseline;gap:14px;padding:11px 0;border-bottom:1px solid var(--regua-suave)}
+.nivel:last-child{border-bottom:none}
+.nivel .rotulo-n{font-weight:900;text-transform:uppercase;font-size:var(--t-small);letter-spacing:.05em;white-space:nowrap;flex:none}
+.nivel .desc{color:var(--tinta-2);font-size:var(--t-ui)}
+.nivel[data-d="1"]{padding-left:0}
+.nivel[data-d="2"]{padding-left:26px}
+.nivel[data-d="3"]{padding-left:52px}
+.nivel[data-d="4"]{padding-left:78px}
+.nivel[data-d="5"]{padding-left:104px}
+.nivel .seta{color:var(--tinta-3);flex:none;font-size:var(--t-small)}
+
+.grade-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:26px}
+@media(max-width:700px){.grade-2{grid-template-columns:1fr}}
+
+.card-atividade{background:var(--folha);border:1px solid var(--verde-linha);border-radius:3px;padding:18px}
+.card-atividade .card-rotulo{font-size:var(--t-micro);letter-spacing:var(--track);text-transform:uppercase;color:var(--verde);font-weight:700;margin-bottom:12px}
+.card-atividade dl{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:var(--t-small)}
+.card-atividade dt{font-weight:700;text-transform:uppercase;font-size:var(--t-micro);letter-spacing:.07em;color:var(--tinta-3);padding-top:2px}
+.card-atividade dd{color:var(--tinta-2)}
+.card-atividade dd b{color:var(--tinta)}
+
+.demonstrativo{background:var(--verde);color:#fff;border-radius:3px;padding:18px;position:relative}
+.demonstrativo .mordida{width:12px;height:12px;background:var(--vivo);position:absolute;top:-5px;right:-5px}
+.demonstrativo .card-rotulo{font-size:var(--t-micro);letter-spacing:var(--track);text-transform:uppercase;color:var(--vivo);font-weight:700;margin-bottom:12px}
+.linha-valor{display:flex;align-items:baseline;font-size:var(--t-small);padding:4px 0}
+.linha-valor .k{flex:none}
+.linha-valor .leader{flex:1;border-bottom:1px dotted rgba(251,252,250,.45);margin:0 8px;transform:translateY(-4px)}
+.linha-valor .v{flex:none;font-family:var(--serif);font-variant-numeric:tabular-nums lining-nums}
+.linha-valor.total{border-top:1px solid rgba(251,252,250,.35);margin-top:8px;padding-top:10px;font-weight:700}
+.linha-valor.total .v{font-size:var(--t-num);color:var(--vivo)}
+.demonstrativo .nota-calc{font-size:var(--t-micro);color:rgba(251,252,250,.75);margin-top:12px;line-height:1.5}
+
+/* estágios de adoção */
+.estagios{display:flex;gap:0;overflow-x:auto;border:1px solid var(--regua);border-radius:3px;background:var(--folha)}
+.estagio{flex:1;min-width:128px;padding:16px 14px 14px;border-right:1px solid var(--regua-suave);position:relative}
+.estagio:last-child{border-right:none}
+.estagio .enum{font-family:var(--serif);font-size:var(--t-ui);color:var(--tinta-3)}
+.estagio h3{font-size:var(--t-small);font-weight:900;text-transform:uppercase;letter-spacing:.03em;line-height:1.25;margin:6px 0 6px}
+.estagio p{font-size:var(--t-caption);color:var(--tinta-2);line-height:1.5}
+.estagio.nosso{background:var(--verde-wash)}
+.estagio.nosso::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--verde)}
+.estagio.deles::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--vivo)}
+.legenda-estagios{display:flex;gap:22px;margin-top:12px;font-size:var(--t-caption);color:var(--tinta-2);flex-wrap:wrap}
+.legenda-estagios .chip{display:inline-flex;align-items:center;gap:7px}
+.legenda-estagios .sw{width:18px;height:8px;border-radius:2px;flex:none}
+
+/* 3 passos do teste */
+.passos{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:700px){.passos{grid-template-columns:1fr}}
+.passo{background:var(--folha);border:1px solid var(--regua);border-radius:3px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.passo .pnum{font-family:var(--serif);font-size:var(--t-num);line-height:1;color:var(--verde)}
+.passo h3{font-size:var(--t-ui);font-weight:900;text-transform:uppercase;letter-spacing:.02em;line-height:1.3}
+.passo p{font-size:var(--t-small);color:var(--tinta-2)}
+.passo p b{color:var(--tinta)}
+.passo .voce{font-size:var(--t-micro);letter-spacing:var(--track);text-transform:uppercase;font-weight:700;color:var(--verde);margin-top:auto;padding-top:6px;border-top:1px solid var(--regua-suave)}
+
+.prova{border-left:3px solid var(--verde);padding:4px 0 4px 20px;max-width:60ch}
+.prova blockquote{font-family:var(--serif);font-size:var(--t-lead);line-height:1.55;color:var(--tinta)}
+.prova .fonte{font-size:var(--t-small);color:var(--tinta-3);margin-top:10px}
+.prova a{color:var(--verde);font-weight:700;text-decoration-thickness:1.5px;text-underline-offset:3px}
+
+/* faixa ocre — aguardando você */
+.cta{background:var(--ocre);color:#fff;border-radius:3px;padding:28px 26px;margin-top:56px}
+.cta .cta-rotulo{font-size:var(--t-micro);letter-spacing:var(--track);text-transform:uppercase;font-weight:700;color:var(--ocre-wash);margin-bottom:10px}
+.cta p{font-size:var(--t-sub);font-weight:900;text-transform:uppercase;line-height:1.2;letter-spacing:-.01em;max-width:26ch;text-wrap:balance}
+.cta .cta-sub{font-size:var(--t-ui);font-weight:400;text-transform:none;letter-spacing:0;color:var(--ocre-wash);margin-top:12px;max-width:58ch}
+
+footer{display:flex;justify-content:space-between;gap:16px;padding-top:14px;font-size:var(--t-micro);letter-spacing:var(--track);text-transform:uppercase;color:var(--tinta-3);flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="regua-topo"></div>
+  <header class="masthead">
+    <span class="chancela"><span class="bloco">Base•IA</span><span class="mordida"></span></span>
+    <span class="rotulo">Material de apresentação · Julho 2026</span>
+  </header>
+
+  <div class="hero">
+    <p class="eyebrow">Plataforma de execução de processos com IA</p>
+    <h1>O processo sai da cabeça. <span class="marca">Vira sistema.</span></h1>
+    <p class="lead">Todo negócio tem processos que só funcionam porque estão na cabeça de alguém. A BaseIA transforma esse conhecimento em <strong>fluxo mapeado, atividades com dono e valor medido em reais</strong> — e acompanha a sua equipe até o processo rodar sozinho.</p>
+  </div>
+
+  <section>
+    <div class="sec-head"><span class="num">01</span><h2>Como funciona: do vídeo ao valor em 6 fases</h2></div>
+    <p class="sec-intro">Você não preenche formulário nem desenha fluxograma. Você <strong>narra o processo como ele é</strong> — a IA faz o trabalho pesado e você só corrige e aprova.</p>
+    <div class="palco">
+      <p class="palco-rotulo">Jornada de um processo dentro da plataforma</p>
+      <div class="fluxo">
+        <div class="fase">
+          <div class="no"><span class="fnum">1</span>Captura</div>
+          <span class="quem">Você narra</span>
+        </div>
+        <div class="fase">
+          <div class="no vivo-tag"><span class="fnum">2</span>Diagnóstico</div>
+          <span class="quem">IA mapeia</span>
+        </div>
+        <div class="fase">
+          <div class="no"><span class="fnum">3</span>Enriquecimento</div>
+          <span class="quem">Você responde</span>
+        </div>
+        <div class="fase">
+          <div class="no"><span class="fnum">4</span>Validação visual</div>
+          <span class="quem">Você corrige</span>
+        </div>
+        <div class="fase">
+          <div class="no vivo-tag"><span class="fnum">5</span>Planejamento</div>
+          <span class="quem">Você aprova</span>
+        </div>
+        <div class="fase">
+          <div class="no"><span class="fnum">6</span>Execução</div>
+          <span class="quem">Sua equipe</span>
+        </div>
+      </div>
+      <p class="palco-nota">Da captura ao primeiro diagnóstico — fluxo do processo como ele é hoje, oportunidades de melhoria e perguntas do que ficou faltando — leva <em>cerca de uma hora</em>. Você revisa no seu painel, responde o que a IA perguntou e corrige o fluxograma direto na tela. Nada vai adiante sem a sua validação.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">02</span><h2>O macro vira micro: a decomposição</h2></div>
+    <p class="sec-intro">"Melhorar o processo de compras" não é executável. A plataforma quebra o processo macro em unidades cada vez menores, até chegar em algo que <strong>uma pessoa consegue fazer, sem decisão pendente, com resultado verificável</strong>.</p>
+    <div class="arvore">
+      <div class="nivel" data-d="1"><span class="rotulo-n">Processo</span><span class="desc">o macro que você narrou — ex.: compras, conciliação, eventos</span></div>
+      <div class="nivel" data-d="2"><span class="seta">└</span><span class="rotulo-n">Oportunidade</span><span class="desc">onde há dor ou desperdício, com valor estimado em reais</span></div>
+      <div class="nivel" data-d="3"><span class="seta">└</span><span class="rotulo-n">Épico</span><span class="desc">quando a oportunidade é grande, ela é fatiada — as fatias somam 100%, sem dupla contagem</span></div>
+      <div class="nivel" data-d="4"><span class="seta">└</span><span class="rotulo-n">Atividade</span><span class="desc">a unidade de execução: tem dono, critério de aceite e estágio de adoção</span></div>
+      <div class="nivel" data-d="5"><span class="seta">└</span><span class="rotulo-n">Subtarefa</span><span class="desc">checklist dentro da atividade; se precisar de dono próprio, vira atividade-filha</span></div>
+    </div>
+    <div class="grade-2">
+      <div class="card-atividade">
+        <p class="card-rotulo">Anatomia de uma atividade</p>
+        <dl>
+          <dt>Dono</dt><dd>uma pessoa <b>da sua equipe</b>, com nome — nunca "o time"</dd>
+          <dt>Aceite</dt><dd>critério objetivo: <b>dado o cenário X, quando Y, então Z</b> — sem "melhorar" vago</dd>
+          <dt>Tamanho</dt><dd>P / M / G — pra ordenar por esforço × valor</dd>
+          <dt>Estágio</dt><dd>onde ela está na jornada de adoção (seção 03)</dd>
+        </dl>
+      </div>
+      <div class="demonstrativo">
+        <span class="mordida"></span>
+        <p class="card-rotulo">Demonstrativo de valor — exemplo ilustrativo</p>
+        <div class="linha-valor"><span class="k">Tempo por execução</span><span class="leader"></span><span class="v tnum">45 min</span></div>
+        <div class="linha-valor"><span class="k">Frequência</span><span class="leader"></span><span class="v tnum">120×/mês</span></div>
+        <div class="linha-valor"><span class="k">Custo/hora da função</span><span class="leader"></span><span class="v tnum">R$ 38,00</span></div>
+        <div class="linha-valor total"><span class="k">Economia/ano</span><span class="leader"></span><span class="v tnum">R$ 41.040</span></div>
+        <p class="nota-calc">O valor em reais é <b>calculado por código</b> a partir dos números que você informou — a IA nunca inventa nem arredonda uma economia. Sem os três números, o sistema pergunta em vez de estimar.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">03</span><h2>Entregar não basta: 5 estágios até rodar sozinho</h2></div>
+    <p class="sec-intro">A maioria das consultorias mede entrega. A BaseIA mede <strong>adoção</strong>: cada atividade avança num board de 5 estágios, e o valor só conta como realizado quando o processo está <strong>em uso de verdade</strong> pela sua equipe.</p>
+    <div class="estagios">
+      <div class="estagio nosso"><span class="enum">1</span><h3>Mapeamento &amp; aceite</h3><p>Definimos juntos o que será feito e como saberemos que ficou pronto.</p></div>
+      <div class="estagio nosso"><span class="enum">2</span><h3>Construção &amp; piloto</h3><p>Construímos a solução e rodamos piloto com dados reais.</p></div>
+      <div class="estagio deles"><span class="enum">3</span><h3>Ativação assistida</h3><p>Sua equipe opera com a gente do lado, até destravar.</p></div>
+      <div class="estagio deles"><span class="enum">4</span><h3>Em uso</h3><p>A equipe roda sem apoio. O valor começa a contar como realizado.</p></div>
+      <div class="estagio deles"><span class="enum">5</span><h3>Autônomo</h3><p>O processo é da casa: documentado, medido e independente de nós.</p></div>
+    </div>
+    <div class="legenda-estagios">
+      <span class="chip"><span class="sw" style="background:var(--verde)"></span>Trabalho BaseIA</span>
+      <span class="chip"><span class="sw" style="background:var(--vivo)"></span>Jornada da sua equipe</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">04</span><h2>Teste com um processo seu — em 3 passos</h2></div>
+    <div class="passos">
+      <div class="passo">
+        <span class="pnum">1</span>
+        <h3>Grave um vídeo narrando o processo</h3>
+        <p>Cerca de <b>1 hora</b>, guiado por um roteiro de 8 perguntas que enviamos. Três números fazem a conta de valor funcionar: <b>volume, tempo e custo/hora</b>. Aceita também áudio e anexos (planilhas, apresentações, documentos).</p>
+        <span class="voce">Seu esforço: 1h, uma vez</span>
+      </div>
+      <div class="passo">
+        <span class="pnum">2</span>
+        <h3>Receba o diagnóstico e refine</h3>
+        <p>Em <b>~1 hora</b> o diagnóstico aparece no seu painel: fluxo do processo como ele é, oportunidades com valor em reais e perguntas do que faltou. Você responde na própria página e corrige o fluxograma na tela.</p>
+        <span class="voce">Seu esforço: minutos, no seu ritmo</span>
+      </div>
+      <div class="passo">
+        <span class="pnum">3</span>
+        <h3>Sua equipe executa pelo painel</h3>
+        <p>As oportunidades aprovadas viram <b>atividades com dono</b> no board de adoção. Você acompanha o avanço estágio a estágio — e o valor realizado versus o projetado, em reais.</p>
+        <span class="voce">Seu esforço: acompanhar</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="num">05</span><h2>Em produção, não em promessa</h2></div>
+    <div class="prova">
+      <blockquote>A plataforma opera hoje com um grupo gastronômico de referência em São Paulo: processos de compras, conciliação financeira e eventos mapeados a partir de vídeos da própria equipe — só o processo de compras rendeu 13 oportunidades de melhoria com valor calculado.</blockquote>
+      <p class="fonte">Apresentação completa (dados anonimizados): <a href="https://romeuhr.github.io/baseia-pitch" rel="noopener">romeuhr.github.io/baseia-pitch</a></p>
+    </div>
+  </section>
+
+  <div class="cta">
+    <p class="cta-rotulo">Aguardando você</p>
+    <p>Me manda um processo que hoje só funciona porque está na cabeça de alguém.</p>
+    <p class="cta-sub">Pode ser o mais bagunçado — é onde o método rende mais. Seu link de acesso pessoal vai junto com esta página: ele abre direto na tela de envio, sem cadastro e sem senha. Você grava o vídeo, envia, e em uma hora o processo está mapeado no seu painel.</p>
+  </div>
+
+  <div class="regua-rodape"></div>
+  <footer>
+    <span>Base•IA — baseia.cloud</span>
+    <span>Romeu Hungria Rechdan</span>
+  </footer>
+</div>
+</body>
+</html>
