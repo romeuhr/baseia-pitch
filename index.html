@@ -149,6 +149,38 @@
 
   .note{margin-top:22px;font-size:.84rem;color:var(--muted-2);border-left:2px solid var(--line);padding-left:14px;line-height:1.5}
 
+  /* ---------- POSICIONAMENTO ---------- */
+  .posmap{width:100%;border-collapse:separate;border-spacing:0;margin-top:26px;min-width:740px}
+  .posmap th,.posmap td{padding:11px 12px;text-align:center;border-bottom:1px solid var(--line);font-size:.9rem}
+  .posmap th{color:var(--muted);font-weight:600;font-size:.76rem;letter-spacing:.04em;text-transform:uppercase}
+  .posmap th:first-child,.posmap td:first-child{text-align:left;padding-left:0}
+  .posmap td:first-child{font-weight:700}
+  .posmap td:first-child small{display:block;font-weight:500;color:var(--muted-2);font-size:.74rem;margin-top:2px}
+  .posmap .fund{text-align:right;padding-right:0;color:var(--muted);font-size:.82rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .pdot{display:inline-block;width:13px;height:13px;border-radius:50%}
+  .pdot.full{background:var(--green);box-shadow:0 0 0 4px rgba(70,211,154,.12)}
+  .pdot.part{background:transparent;border:2px solid var(--amber)}
+  .pdot.none{background:transparent;border:1.5px solid var(--line)}
+  .posmap tr.baseia td{background:rgba(77,139,255,.07);border-top:1.5px solid var(--blue);border-bottom:1.5px solid var(--blue)}
+  .posmap tr.baseia td:first-child{color:var(--blue);border-radius:12px 0 0 12px}
+  .posmap tr.baseia td:last-child{border-radius:0 12px 12px 0}
+  .posmap tr.baseia .pdot.full{background:var(--blue);box-shadow:0 0 0 4px rgba(77,139,255,.16)}
+  .maplegend{display:flex;gap:20px;margin-top:14px;font-size:.78rem;color:var(--muted);flex-wrap:wrap;align-items:center}
+  .maplegend span{display:inline-flex;align-items:center;gap:7px}
+  .mapwrap{overflow-x:auto}
+  .vp-card{display:flex;flex-direction:column;gap:12px;position:relative}
+  .vp-card .tag{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--muted-2)}
+  .vp-card .head{font-size:1.22rem;font-weight:800;letter-spacing:-.015em;line-height:1.24}
+  .vp-card .head .hl{color:var(--blue)}
+  .vp-card .vsub{font-size:.88rem;color:var(--muted);line-height:1.5}
+  .vp-card .anchor{border-top:1px solid var(--line);padding-top:11px;font-size:.8rem;color:var(--muted);line-height:1.5}
+  .vp-card .anchor b{color:var(--txt);display:block;margin-bottom:3px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+  .vp-card .proof{font-size:.74rem;color:var(--muted-2);line-height:1.45}
+  .vp-card .proof b{color:var(--amber);font-weight:600}
+  .vp-card.rec{border-color:var(--blue)}
+  .vp-card.rec::before{content:"lidera com cliente";position:absolute;top:-10px;left:16px;background:var(--blue);color:#fff;
+    font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+
   /* ---------- CHROME ---------- */
   .topbar{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;
     justify-content:space-between;padding:0 26px;z-index:30;pointer-events:none}
@@ -385,7 +417,84 @@
     </div>
   </section>
 
-  <!-- 9 — O QUE ESTÁ NO AR -->
+  <!-- 9 — POSICIONAMENTO: O ELO SEM DONO -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">● Posicionamento — mercado mapeado, jul/2026</div>
+      <h2>Cada pedaço vale unicórnio.<br><span class="blue">O ciclo completo não tem dono.</span></h2>
+      <p class="sub" style="margin-top:12px;max-width:62ch">Pesquisa proprietária (9 relatórios, fontes verificadas) sobre quem transforma processos em automação — no mundo e no Brasil. Ninguém fecha os quatro elos.</p>
+      <div class="mapwrap">
+      <table class="posmap">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Captura<br>narrada</th>
+            <th>Diagnóstico<br>em R$</th>
+            <th>Execução<br>com dono</th>
+            <th>Adoção<br>medida</th>
+            <th style="text-align:right">validação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Scribe<small>docs por gravação · EUA</small></td><td><span class="pdot full"></span></td><td><span class="pdot part"></span></td><td><span class="pdot none"></span></td><td><span class="pdot none"></span></td><td class="fund">US$ 1,3 bi</td></tr>
+          <tr><td>Guidde<small>vídeo → treino de agentes · EUA</small></td><td><span class="pdot full"></span></td><td><span class="pdot none"></span></td><td><span class="pdot part"></span></td><td><span class="pdot none"></span></td><td class="fund">US$ 50M Series B</td></tr>
+          <tr><td>Tango<small>guias → automação de cliques · EUA</small></td><td><span class="pdot part"></span></td><td><span class="pdot none"></span></td><td><span class="pdot part"></span></td><td><span class="pdot part"></span></td><td class="fund">US$ 23,7M</td></tr>
+          <tr><td>Automat<small>vídeo → agentes managed · YC</small></td><td><span class="pdot part"></span></td><td><span class="pdot none"></span></td><td><span class="pdot full"></span></td><td><span class="pdot none"></span></td><td class="fund">US$ 19M</td></tr>
+          <tr><td>Caddi<small>narração → código API · EUA</small></td><td><span class="pdot full"></span></td><td><span class="pdot none"></span></td><td><span class="pdot full"></span></td><td><span class="pdot none"></span></td><td class="fund">seed 2025</td></tr>
+          <tr><td>Orby → Uniphore<small>observa e automatiza · exit ago/25</small></td><td><span class="pdot part"></span></td><td><span class="pdot none"></span></td><td><span class="pdot full"></span></td><td><span class="pdot none"></span></td><td class="fund">adquirida</td></tr>
+          <tr><td>Pipefy<small>plataforma de agentes · BR</small></td><td><span class="pdot none"></span></td><td><span class="pdot none"></span></td><td><span class="pdot full"></span></td><td><span class="pdot none"></span></td><td class="fund">4.700 agentes</td></tr>
+          <tr><td>BHub<small>BPO de IA (assume o processo) · BR</small></td><td><span class="pdot none"></span></td><td><span class="pdot none"></span></td><td><span class="pdot full"></span></td><td><span class="pdot none"></span></td><td class="fund">R$ 250M captados</td></tr>
+          <tr class="baseia"><td>BaseIA<small>Método Processo → Valor · BR</small></td><td><span class="pdot full"></span></td><td><span class="pdot full"></span></td><td><span class="pdot full"></span></td><td><span class="pdot full"></span></td><td class="fund" style="color:var(--blue);font-weight:700">em produção</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="maplegend">
+        <span><span class="pdot full" style="width:10px;height:10px"></span> cobre o elo</span>
+        <span><span class="pdot part" style="width:10px;height:10px"></span> parcial</span>
+        <span><span class="pdot none" style="width:10px;height:10px"></span> não cobre</span>
+      </div>
+      <p class="note">O elo vazio no mundo inteiro é <b style="color:var(--txt)">adoção medida</b>: WalkMe/Whatfix medem adoção de <i>software</i>; ninguém mede adoção de <i>processo</i> com valor realizado. E o frame "agentes de IA" está sob correção — Gartner prevê &gt;40% dos projetos agentic cancelados até 2027 ("agent washing"). Nós não vendemos agente; vendemos valor adotado.</p>
+    </div>
+  </section>
+
+  <!-- 10 — PROPOSTA DE VALOR: 3 ÂNGULOS -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker green">● Proposta de valor — um produto, três ângulos</div>
+      <h2>As mesmas funcionalidades. <span class="blue">A mensagem certa pra cada mesa.</span></h2>
+      <p class="sub" style="margin-top:12px;max-width:64ch">Cada ângulo está ancorado em funcionalidade que já roda em produção — e validado por um player que levantou capital com esse enquadramento. O comprador médio brasileiro prioriza <b style="color:var(--txt)">custo (47%) e organização (40%)</b>, não tecnologia.</p>
+
+      <div class="grid g3" style="margin-top:34px">
+        <div class="card vp-card rec">
+          <span class="tag">Ângulo 1 · o número — dono &amp; CFO</span>
+          <div class="head">Sua operação devolvendo <span class="hl">R$ ao caixa</span> — calculado, não prometido.</div>
+          <p class="vsub">Cada processo vira oportunidades com economia em R$/ano. O valor só conta como <b style="color:var(--txt)">realizado</b> quando a equipe usa de verdade. Custa menos que um analista — e implementa o que a consultoria deixa no PDF.</p>
+          <div class="anchor"><b>Já roda em produção</b>Cálculo por código (nunca por IA) · valor realizado vs projetado · volume × tempo × custo/hora.</div>
+          <p class="proof">Validado por: <b>Caddi</b> ("904 h/mês cobertas") · <b>Automat</b> ("−80% custo por loan").</p>
+        </div>
+
+        <div class="card vp-card">
+          <span class="tag">Ângulo 2 · o método — investidor</span>
+          <div class="head">O elo sem dono da automação: <span class="hl">adoção medida</span>.</div>
+          <p class="vsub">Um vídeo de 1h do especialista vira fluxo mapeado, atividades com dono e adoção em 5 estágios — o Método Processo → Valor. Service-as-Software para o mid-market da América Latina.</p>
+          <div class="anchor"><b>Já roda em produção</b>Vídeo → diagnóstico em ~1h · 6 fases · 5 estágios de adoção · cliente pagante multi-país.</div>
+          <p class="proof">Validado por: <b>Foundation Capital</b> (US$ 4,6T Service-as-Software) · <b>Forrester</b> ("process intelligence resgata 30% dos projetos de IA") · exit da <b>Orby</b>.</p>
+        </div>
+
+        <div class="card vp-card">
+          <span class="tag">Ângulo 3 · a confiança — compliance</span>
+          <div class="head">A IA extrai. <span class="hl">O código calcula.</span> Você decide.</div>
+          <p class="vsub">Nenhum número financeiro nasce de palpite de IA: economia é cálculo determinístico auditável. Nada avança sem validação humana — cada versão tem revisão antes de publicar.</p>
+          <div class="anchor"><b>Já roda em produção</b>Regra LLM-extrai / código-calcula · preview → revisão → publica · trilha de auditoria por atividade.</div>
+          <p class="proof">Validado por: <b>Caddi</b> ("hallucination-free") · <b>KPMG BR</b>: 84% apontam controles internos como mitigador nº 1 de fraude.</p>
+        </div>
+      </div>
+
+      <p class="note">Gatilho 2026 com data: a partir de <b style="color:var(--txt)">03/08/2026</b> a emissão fiscal sem campos IBS/CBS é bloqueada — e 72% das médias e grandes se declaram despreparadas para adaptar processos (PwC). Processo mapeado deixa de ser luxo.</p>
+    </div>
+  </section>
+
+  <!-- 11 — O QUE ESTÁ NO AR -->
   <section class="slide">
     <div class="inner">
       <div class="kicker green">● No ar hoje — jul/2026</div>
