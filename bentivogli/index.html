@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BaseIA — Processo → Valor · 14/07/2026</title>
+<style>
+  :root{
+    --papel:#FAFAF8; --tinta:#151221; --chancela:#3F2B80; --vivo:#C9F53C;
+    --ocre:#A8324E; --palco:#151221; --palco-tinta:#F0EEF6; --linha:#DBD9E2;
+    --meia:#5D5775;
+    --display:'Archivo Black','Arial Black',sans-serif;
+    --serif:'Literata',Georgia,'Iowan Old Style',serif;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{background:var(--papel);color:var(--tinta);font-family:var(--serif);font-size:17px;line-height:1.6}
+
+  .slide{
+    min-height:100vh;scroll-snap-align:start;position:relative;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:56px clamp(28px,6vw,100px);
+  }
+  .slide.escuro{background:var(--palco);color:var(--palco-tinta)}
+  .slide.escuro p{color:#B2ADC6}
+
+  .rotulo{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;
+    color:var(--chancela);display:flex;align-items:center;gap:12px;
+    margin-bottom:14px;text-transform:uppercase;
+  }
+  .rotulo::after{content:"";height:1px;flex:1;background:var(--linha)}
+  .escuro .rotulo{color:var(--vivo)}
+  .escuro .rotulo::after{background:#373150}
+
+  h1{font-family:var(--display);font-size:clamp(38px,7vw,84px);line-height:.96;
+     text-transform:uppercase;letter-spacing:-.01em;text-wrap:balance;margin-bottom:18px}
+  h2{font-family:var(--display);font-size:clamp(23px,3.6vw,40px);line-height:1.02;
+     text-transform:uppercase;text-wrap:balance;margin-bottom:18px}
+  .verde{color:var(--chancela)}
+  .escuro .verde{color:var(--vivo)}
+
+  p{max-width:68ch;margin-bottom:12px}
+  .grande{font-size:clamp(18px,2.1vw,22px);line-height:1.5}
+  mark{background:var(--vivo);color:var(--tinta);padding:0 5px;border-radius:2px;font-weight:600}
+  strong{font-weight:700}
+
+  .tbl{overflow-x:auto;border:1px solid var(--tinta);border-radius:3px;margin:16px 0}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;line-height:1.4;min-width:620px}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+     text-align:left;padding:8px 12px;background:var(--chancela);color:var(--papel);font-weight:600}
+  td{padding:9px 12px;border-top:1px solid var(--linha);vertical-align:top}
+  td.n,th.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+  tr.destaque td{background:#EFECF9}
+
+  .chip{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+        padding:2px 8px;border-radius:2px;font-weight:600;white-space:nowrap}
+  .chip.premissa{border:1px dashed var(--ocre);color:var(--ocre)}
+  .chip.alto{background:var(--tinta);color:var(--vivo)}
+  .chip.medio{background:var(--chancela);color:var(--papel)}
+  .chip.baixo{border:1px solid var(--meia);color:var(--meia)}
+
+  /* chips de papel: quem faz o quê */
+  .ator{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;
+        padding:2.5px 8px;border-radius:2px;font-weight:700;white-space:nowrap;margin:2px 4px 2px 0}
+  .ator.ia{background:#EFECF9;color:var(--chancela);border:1px dashed #8B86A0}
+  .ator.cod{background:var(--chancela);color:var(--papel)}
+  .ator.voce{border:1.5px solid var(--tinta);color:var(--tinta)}
+
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:start}
+  .cartao{border:1px solid var(--tinta);border-radius:3px;padding:20px;background:#FFFFFF}
+  .cartao h4{font-family:var(--display);font-size:13px;text-transform:uppercase;margin-bottom:8px}
+  .cartao p{font-size:14.5px;margin-bottom:0;color:#443E5A}
+
+  .kpis{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--tinta);border-radius:3px;margin:20px 0}
+  .kpi{flex:1 1 180px;padding:16px 20px;border-right:1px solid var(--linha)}
+  .kpi:last-child{border-right:none}
+  .kpi .v{font-family:var(--display);font-size:clamp(22px,2.8vw,34px);line-height:1;color:var(--chancela)}
+  .kpi .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+          color:var(--meia);margin-top:8px;display:block}
+  @media(max-width:640px){.kpi{border-right:none;border-bottom:1px solid var(--linha)}.kpi:last-child{border-bottom:none}}
+
+  /* nem-nem-nem */
+  .nemnem{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:22px}
+  .nn{border:1px dashed var(--meia);border-radius:3px;padding:12px 14px;font-size:13px;color:var(--meia);line-height:1.45}
+  .nn b{display:block;font-family:var(--display);font-size:11.5px;text-transform:uppercase;color:var(--tinta);margin-bottom:4px}
+  .nn.sim{border:1.5px solid var(--chancela);color:#443E5A;background:#EFECF9}
+  .nn.sim b{color:var(--chancela)}
+
+  /* pipeline do método com setas */
+  .fases{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;margin:22px 0}
+  .fase{border:1px solid var(--tinta);border-radius:3px;padding:16px;background:#FFFFFF;position:relative}
+  .fase::after{content:"→";position:absolute;right:-19px;top:40%;font-family:var(--mono);
+               color:var(--chancela);font-weight:700;font-size:17px}
+  .fase:last-child::after{content:none}
+  .fase .fnum{font-family:var(--display);font-size:22px;color:var(--chancela)}
+  .fase h4{font-family:var(--display);font-size:12.5px;text-transform:uppercase;margin:8px 0 6px}
+  .fase p{font-size:12.5px;margin:0 0 8px;color:#443E5A;line-height:1.45}
+  @media(max-width:900px){.fases{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.fase::after{content:none}}
+
+  /* jornada macro→micro */
+  .jornada{margin-top:8px}
+  .nivel{display:grid;grid-template-columns:170px 1fr 235px;gap:16px;padding:10px 0;
+         border-top:1px solid var(--linha);align-items:center}
+  .nivel:first-child{border-top:none}
+  .nivel .zoom{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--meia)}
+  .nivel .zoom b{display:block;font-size:13.5px;color:var(--tinta);letter-spacing:.06em;margin-top:2px}
+  .nivel .art{font-size:14px;line-height:1.45;border-left:3px solid var(--chancela);padding-left:14px;max-width:none}
+  .nivel.final .art{border-left-color:var(--vivo);background:#F2FBDC;padding:8px 14px;border-radius:0 3px 3px 0}
+  .nivel .quem{text-align:left}
+  @media(max-width:820px){.nivel{grid-template-columns:1fr}.nivel .art{margin-left:0!important}}
+
+  /* cadeia dos 4 elos */
+  .cadeia{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin:26px 0 10px}
+  .elo{border:1px solid var(--tinta);border-radius:3px;padding:16px;background:#FFFFFF;position:relative}
+  .elo::after{content:"→";position:absolute;right:-22px;top:38%;font-family:var(--mono);
+              color:var(--chancela);font-weight:700;font-size:18px}
+  .elo:last-child::after{content:none}
+  .elo .enum{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--meia)}
+  .elo h4{font-family:var(--display);font-size:13px;text-transform:uppercase;margin:6px 0 10px;line-height:1.15}
+  .elo .quem{font-family:var(--mono);font-size:10.5px;color:var(--meia);line-height:1.7}
+  .elo.sem{background:var(--vivo);border-width:2px}
+  .elo.sem .enum,.elo.sem .quem{color:#151221}
+  @media(max-width:860px){.cadeia{grid-template-columns:1fr 1fr;gap:16px}.elo::after{content:none}}
+
+  /* mapa de posicionamento */
+  .mapa{border:1px solid var(--tinta);border-radius:3px;background:#FFFFFF;margin:18px 0;overflow-x:auto;max-width:900px}
+  .mapa svg{display:block;min-width:640px;width:100%;height:auto}
+
+  .escada{display:flex;flex-direction:column;margin-top:8px}
+  .degrau{display:grid;grid-template-columns:96px 1fr 250px;gap:16px;padding:13px 0;
+          border-top:1px solid #373150;align-items:baseline}
+  .degrau:first-child{border-top:none}
+  .degrau .rot{font-family:var(--display);font-size:20px;color:var(--vivo);text-transform:uppercase;line-height:1}
+  .degrau .rot small{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:#8C87A5;margin-top:5px}
+  .degrau .desc{font-size:14.5px;color:#CFCBE0;line-height:1.45}
+  .degrau .gat{font-family:var(--mono);font-size:11.5px;color:#A29DBA;
+               border-left:2px solid var(--chancela);padding-left:12px;line-height:1.5}
+  .degrau .gat b{color:var(--vivo);font-weight:600}
+  @media(max-width:760px){.degrau{grid-template-columns:1fr}.degrau .gat{border-left:none;padding-left:0;border-top:1px dashed #373150;padding-top:8px}}
+
+  .portas{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:24px}
+  .porta{border:1px solid #373150;border-radius:4px;padding:24px;background:#1F1A31}
+  .porta .num-p{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--vivo)}
+  .porta h4{font-family:var(--display);font-size:19px;text-transform:uppercase;margin:10px 0 8px;color:var(--palco-tinta)}
+  .porta p{font-size:14.5px;color:#B2ADC6;margin:0}
+
+  .kill{border-left:3px solid var(--ocre);padding:2px 0 2px 16px;margin:10px 0;max-width:70ch}
+  .kill p{margin-bottom:0;font-size:15px}
+  .kill b{color:var(--ocre)}
+
+  .legenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+           border:1px solid #373150;border-radius:2px;margin-top:44px;
+           font-family:var(--mono);font-size:11px}
+  .legenda>div{padding:9px 13px;border-right:1px solid #373150}
+  .legenda>div:last-child{border-right:none}
+  .legenda .k{letter-spacing:.12em;color:#8C87A5;display:block;font-size:9.5px}
+  .legenda .v{color:var(--palco-tinta)}
+  @media(max-width:640px){.legenda>div{border-right:none;border-bottom:1px solid #373150}.legenda>div:last-child{border-bottom:none}}
+
+  .contador{position:fixed;bottom:16px;right:20px;font-family:var(--mono);font-size:11px;
+            color:var(--meia);background:rgba(250,250,248,.85);padding:4px 10px;border-radius:2px;
+            border:1px solid var(--linha);z-index:9}
+  .nota{font-size:13.5px;color:var(--meia);font-style:italic;max-width:70ch}
+  .escuro .nota{color:#8C87A5}
+
+  @media print{
+    html{scroll-snap-type:none}
+    .slide{min-height:auto;page-break-after:always;padding:40px}
+    .contador{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- S1 · CAPA -->
+<section class="slide escuro" id="s1">
+  <div class="rotulo">BaseIA · 14/07/2026</div>
+  <h1>Processo <span class="verde">→</span> Valor</h1>
+  <p class="grande" style="max-width:56ch"><strong style="color:var(--palco-tinta)">A IA extrai. O código calcula. Você decide.</strong><br>
+  A plataforma que transforma processos narrados em economia medida — com método, dono e R$ auditável.</p>
+  <div class="legenda">
+    <div><span class="k">DOCUMENTO</span><span class="v">A IDEIA, O MÉTODO E O QUE JÁ EXISTE</span></div>
+    <div><span class="k">PARA</span><span class="v">MARCELO BENTIVOGLI</span></div>
+    <div><span class="k">BASE</span><span class="v">BUSINESS PLAN 12/07 · 24+ PLAYERS TESTADOS</span></div>
+    <div><span class="k">STATUS</span><span class="v">EM PRODUÇÃO · 1º CLIENTE PAGANTE</span></div>
+  </div>
+</section>
+
+<!-- S2 · A IDEIA -->
+<section class="slide" id="s2">
+  <div class="rotulo">02 · A ideia</div>
+  <h2>Toda empresa média roda sobre processos que <span class="verde">só existem na cabeça de alguém</span></h2>
+  <p class="grande">Compras, conciliação, eventos, contas a pagar — vivem em Excel, WhatsApp e hábito. Cada FTE de back-office custa <strong>R$ 82-127k/ano</strong> fazendo trabalho que em parte não precisaria existir. A BaseIA pega o processo <strong>narrado em vídeo por quem o executa</strong> e o transforma em fluxo mapeado → oportunidades com R$/ano → atividades com dono → <mark>adoção acompanhada até o valor realizado</mark>.</p>
+  <div class="nemnem">
+    <div class="nn"><b>Não é consultoria</b>Não cobramos hora; entregamos software que fica</div>
+    <div class="nn"><b>Não é ferramenta</b>O cliente não precisa saber o que automatizar</div>
+    <div class="nn"><b>Não é BPO</b>O processo continua sendo do cliente</div>
+    <div class="nn sim"><b>É a camada que faltava</b>Diagnóstico com R$ + execução com dono + valor provado</div>
+  </div>
+</section>
+
+<!-- S3 · O MÉTODO -->
+<section class="slide" id="s3">
+  <div class="rotulo">03 · Como funciona</div>
+  <h2>O Método Processo → Valor, em 5 fases</h2>
+  <div class="fases">
+    <div class="fase"><span class="fnum">1</span><h4>Captura</h4><p>Quem executa narra em vídeo + anexa planilhas e SOPs. Sem instalar nada, sem workshop.</p><span class="ator voce">VOCÊ NARRA</span></div>
+    <div class="fase"><span class="fnum">2</span><h4>Diagnóstico</h4><p>Fluxo AS-IS desenhado + oportunidades identificadas + quiz de refino. A IA nunca cria nem apaga IDs.</p><span class="ator ia">IA EXTRAI</span></div>
+    <div class="fase"><span class="fnum">3</span><h4>Co-criação</h4><p>Fluxo atual × proposto no hub; quiz de valor refina o R$/ano; priorização WSJF.</p><span class="ator voce">VOCÊ DECIDE</span></div>
+    <div class="fase"><span class="fnum">4</span><h4>Decomposição</h4><p>Oportunidade aprovada vira atividades executáveis com dono e critério de aceite.</p><span class="ator cod">CÓDIGO DIMENSIONA</span></div>
+    <div class="fase"><span class="fnum">5</span><h4>Adoção</h4><p>Board de 5 estágios até "Autônomo", com valor projetado × realizado.</p><span class="ator cod">CÓDIGO CALCULA</span></div>
+  </div>
+  <p class="nota">Da gravação ao diagnóstico publicado: ~1h de máquina + revisão humana. O piloto de &lt;90 dias entrega este ciclo completo em 1 processo.</p>
+</section>
+
+<!-- S4 · JORNADA MACRO→MICRO -->
+<section class="slide" id="s4">
+  <div class="rotulo">04 · A jornada do cliente, do macro ao micro</div>
+  <h2>Cada zoom tem dono: <span class="verde">a IA extrai, o código calcula, o humano decide</span></h2>
+  <div class="jornada">
+    <div class="nivel">
+      <div class="zoom">NÍVEL 1 · MACRO<b>EMPRESA</b></div>
+      <div class="art" style="margin-left:0">Dezenas de processos tácitos. O dono escolhe por onde começar — 1 processo, piloto &lt;90 dias.</div>
+      <div class="quem"><span class="ator voce">VOCÊ DECIDE</span></div>
+    </div>
+    <div class="nivel">
+      <div class="zoom">NÍVEL 2<b>PROCESSO</b></div>
+      <div class="art" style="margin-left:14px">Quem executa narra em vídeo (ex. real: Compra Externa). A plataforma transcreve em 3 camadas e desenha o fluxo.</div>
+      <div class="quem"><span class="ator ia">IA EXTRAI</span></div>
+    </div>
+    <div class="nivel">
+      <div class="zoom">NÍVEL 3<b>FLUXO</b></div>
+      <div class="art" style="margin-left:28px">AS-IS × proposto, etapa por etapa. O cliente valida e refina no hub — quiz, editor de fluxo.</div>
+      <div class="quem"><span class="ator ia">IA EXTRAI</span><span class="ator voce">VOCÊ DECIDE</span></div>
+    </div>
+    <div class="nivel">
+      <div class="zoom">NÍVEL 4<b>OPORTUNIDADE</b></div>
+      <div class="art" style="margin-left:42px">13 encontradas no caso real. Cada R$/ano é <strong>derivado por código</strong> de minutos × frequência × custo — a IA nunca digita o número.</div>
+      <div class="quem"><span class="ator cod">CÓDIGO CALCULA</span></div>
+    </div>
+    <div class="nivel">
+      <div class="zoom">NÍVEL 5 · MICRO<b>ATIVIDADE</b></div>
+      <div class="art" style="margin-left:56px">Card com dono nomeado do lado do cliente + prompt operacional (o <em>como</em>) + aceite Given-When-Then. IA propõe a divisão, script dimensiona, humano aprova.</div>
+      <div class="quem"><span class="ator ia">IA PROPÕE</span><span class="ator cod">CÓDIGO DIMENSIONA</span><span class="ator voce">VOCÊ APROVA</span></div>
+    </div>
+    <div class="nivel final">
+      <div class="zoom">RESULTADO<b>VALOR REALIZADO</b></div>
+      <div class="art" style="margin-left:56px">Board de 5 estágios até "Autônomo". Valor projetado × realizado por processo — <strong>derivado, não declarado</strong>.</div>
+      <div class="quem"><span class="ator cod">CÓDIGO CALCULA</span></div>
+    </div>
+  </div>
+  <p class="nota" style="margin-top:14px">O diferencial está em onde a IA <strong>não</strong> entra: todo número que pode virar contrato sai de código determinístico, auditável linha a linha.</p>
+</section>
+
+<!-- S5 · O ELO SEM DONO -->
+<section class="slide" id="s5">
+  <div class="rotulo">05 · A tese, testada por fora</div>
+  <h2>Quatro elos. <span class="verde">Todo mundo para no terceiro.</span></h2>
+  <div class="cadeia">
+    <div class="elo">
+      <span class="enum">ELO 1</span>
+      <h4>Capturar o processo</h4>
+      <div class="quem">Scribe · Guidde · Tango<br>— virou commodity</div>
+    </div>
+    <div class="elo">
+      <span class="enum">ELO 2</span>
+      <h4>Diagnosticar com R$</h4>
+      <div class="quem">Consultorias (na mão,<br>caro, sem código)</div>
+    </div>
+    <div class="elo">
+      <span class="enum">ELO 3</span>
+      <h4>Executar</h4>
+      <div class="quem">RPA · Sola · Freedom.AI<br>— sem saber o que vale</div>
+    </div>
+    <div class="elo sem">
+      <span class="enum">ELO 4 · SEM DONO</span>
+      <h4>Adoção medida + valor realizado</h4>
+      <div class="quem">NINGUÉM — em 24 players<br>testados em jul/2026</div>
+    </div>
+  </div>
+  <p class="grande">Ninguém assina embaixo do valor realizado. Todos mostram <em>projeção</em>; a linha de defesa é <mark>ROI projetado ≠ economia validada</mark>.</p>
+  <p class="nota">Na matriz de 10 capacidades × 13 players, a BaseIA é única em 3 do núcleo: R$ determinístico, adoção em estágios, valor realizado.</p>
+</section>
+
+<!-- S6 · MAPA -->
+<section class="slide" id="s6">
+  <div class="rotulo">06 · O mapa competitivo</div>
+  <h2>Todo mundo para <span class="verde">antes da prova</span></h2>
+  <div class="mapa">
+  <svg viewBox="0 0 720 450" role="img" aria-label="Mapa de posicionamento: amplitude do ciclo coberto versus profundidade de prova de valor. A BaseIA está sozinha no quadrante superior direito.">
+    <!-- quadrantes -->
+    <line x1="370" y1="30" x2="370" y2="375" stroke="#DBD9E2" stroke-width="1" stroke-dasharray="4 4"/>
+    <line x1="70" y1="202" x2="670" y2="202" stroke="#DBD9E2" stroke-width="1" stroke-dasharray="4 4"/>
+    <!-- eixos -->
+    <line x1="70" y1="375" x2="670" y2="375" stroke="#151221" stroke-width="1.5"/>
+    <line x1="70" y1="375" x2="70" y2="30" stroke="#151221" stroke-width="1.5"/>
+    <polygon points="670,375 660,371 660,379" fill="#151221"/>
+    <polygon points="70,30 66,40 74,40" fill="#151221"/>
+    <text x="672" y="398" font-family="ui-monospace,Menlo,monospace" font-size="10.5" letter-spacing="1.5" fill="#5D5775" text-anchor="end">AMPLITUDE: CAPTURA → EXECUÇÃO</text>
+    <text x="52" y="30" font-family="ui-monospace,Menlo,monospace" font-size="10.5" letter-spacing="1.5" fill="#5D5775" transform="rotate(-90 52 30)" text-anchor="end">PROVA: ROI PROJETADO → VALOR REALIZADO</text>
+    <!-- anotação quadrante -->
+    <text x="655" y="52" font-family="ui-monospace,Menlo,monospace" font-size="10" letter-spacing="1.2" fill="#3F2B80" text-anchor="end">FECHA O CICLO COM PROVA ↗</text>
+
+    <!-- demais players (cinza) -->
+    <g font-family="ui-monospace,Menlo,monospace" font-size="11" fill="#443E5A">
+      <circle cx="250" cy="294" r="6.5" fill="#8B86A0"/><text x="262" y="298">Guidde · Tango</text>
+      <circle cx="382" cy="307" r="6.5" fill="#8B86A0"/><text x="394" y="311">Pipefy · BPMs BR</text>
+      <circle cx="430" cy="331" r="6.5" fill="#8B86A0"/><text x="442" y="335">ERPs BR</text>
+      <circle cx="514" cy="252" r="6.5" fill="#8B86A0"/><text x="526" y="256">BHub</text>
+      <circle cx="250" cy="221" r="6.5" fill="#8B86A0"/><text x="262" y="225">UpFlux</text>
+      <circle cx="466" cy="282" r="6.5" fill="#8B86A0"/><text x="454" y="270" text-anchor="end">Automat · Caddi</text>
+    </g>
+    <!-- risco alto (tinta) -->
+    <g font-family="ui-monospace,Menlo,monospace" font-size="11.5" font-weight="700" fill="#151221">
+      <circle cx="298" cy="178" r="7.5" fill="#151221"/><text x="310" y="182">Scribe</text>
+      <circle cx="202" cy="195" r="7.5" fill="#151221"/><text x="190" y="184" text-anchor="end">Falconi Mid</text>
+      <circle cx="502" cy="238" r="7.5" fill="#151221"/><text x="514" y="230">Sola</text>
+      <circle cx="550" cy="301" r="7.5" fill="#151221"/><text x="562" y="305">Freedom.AI</text>
+    </g>
+    <!-- BaseIA -->
+    <circle cx="478" cy="70" r="10" fill="#3F2B80" stroke="#C9F53C" stroke-width="3.5"/>
+    <text x="494" y="75" font-family="'Archivo Black','Arial Black',sans-serif" font-size="14" fill="#3F2B80">BASEIA</text>
+
+    <!-- legenda -->
+    <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#5D5775">
+      <circle cx="86" cy="425" r="5" fill="#3F2B80" stroke="#C9F53C" stroke-width="2"/><text x="97" y="429">NÓS</text>
+      <circle cx="146" cy="425" r="5" fill="#151221"/><text x="157" y="429">RISCO ALTO</text>
+      <circle cx="248" cy="425" r="5" fill="#8B86A0"/><text x="259" y="429">DEMAIS</text>
+    </g>
+  </svg>
+  </div>
+  <p class="nota">Posicionamento qualitativo (jul/2026) — fichas completas, matriz de capacidades e fontes no business plan. Janela BR: nenhum global tem GTM local; estimamos 12-24 meses.</p>
+</section>
+
+<!-- S7 · QUADRO GLOBAL -->
+<section class="slide" id="s7">
+  <div class="rotulo">07 · O quadro global, player a player</div>
+  <h2>Quem está no espaço — <span class="verde">e onde cada um para</span></h2>
+  <div class="tbl"><table>
+    <tr><th>Player</th><th>O que faz · onde para</th><th>Risco</th></tr>
+    <tr><td><strong>Scribe</strong> (EUA)</td><td>Captura + Optimize mede processo em uso; ~US$ 100M ARR; 94% da F500. Não calcula R$ nem acompanha adoção com dono</td><td><span class="chip alto">ALTO</span></td></tr>
+    <tr><td><strong>Sola</strong> (YC S23)</td><td>Automação a partir de observação; Series A a16z, receita 5×/ano. Enterprise EUA, sem diagnóstico de valor</td><td><span class="chip alto">ALTO</span></td></tr>
+    <tr><td><strong>Freedom.AI</strong> (BR)</td><td>"Vendo trabalho digital", +900% em 2025, 100+ clientes. Direto na execução, sem método nem medição</td><td><span class="chip alto">ALTO</span></td></tr>
+    <tr><td><strong>Falconi Mid</strong> (BR)</td><td>Assinatura mensal de resultado, mesmo ICP, R$ 15-35k/mês. Sem plataforma, sem R$ determinístico</td><td><span class="chip alto">ALTO</span></td></tr>
+    <tr><td>Guidde (EUA)</td><td>Vídeo→documentação; estratégia de virar dataset pra agentes declarada, nada shipped</td><td><span class="chip medio">MÉDIO</span></td></tr>
+    <tr><td>UpFlux (BR)</td><td>Process mining sobre logs de ERP; reposicionou "Enterprise AI". Colide no discurso, não no método</td><td><span class="chip medio">MÉDIO</span></td></tr>
+    <tr><td>Pipefy (BR)</td><td>4.700 agentes mas base estagnada desde 2023; risco real é a rede de integradores</td><td><span class="chip medio">MÉDIO</span></td></tr>
+    <tr><td>Microsoft</td><td>Copilot Studio comoditiza captura e automação simples; não fecha diagnóstico nem adoção</td><td><span class="chip medio">MÉDIO</span></td></tr>
+    <tr><td>Automat · Caddi (EUA)</td><td>Espelhos do nosso modelo (forward-deployed como feature; vídeo→automação, US$ 5-10k/mês). Sem BR</td><td><span class="chip medio">MÉDIO</span></td></tr>
+    <tr><td>BHub (BR)</td><td>BPO financeiro com automação interna, ARR R$ 168M; ancora "resultado sem software" mas não constrói produto</td><td><span class="chip baixo">MÉDIO-BAIXO</span></td></tr>
+    <tr><td>ERPs BR (TOTVS, Sankhya, Omie)</td><td>Agentes embutidos só sobre o dado do próprio sistema; encolhem a lista de processos fáceis</td><td><span class="chip baixo">LATERAL</span></td></tr>
+    <tr class="destaque"><td>BotCity (BR)</td><td>RPA com programa formal de parceiros — cobre o elo "executa" <strong>como parceiro em potencial</strong></td><td><span class="chip baixo">PARCEIRO</span></td></tr>
+  </table></div>
+</section>
+
+<!-- S8 · O QUE JÁ RODA -->
+<section class="slide" id="s8">
+  <div class="rotulo">08 · Prova, não promessa</div>
+  <h2>Isso não é deck de ideia. <span class="verde">Está em produção.</span></h2>
+  <div class="kpis">
+    <div class="kpi"><span class="v">1º</span><span class="k">cliente pagante — grupo gastronômico premium nacional</span></div>
+    <div class="kpi"><span class="v">1.186</span><span class="k">testes automatizados · deploy gated</span></div>
+    <div class="kpi"><span class="v">5</span><span class="k">processos vivos no hub do cliente</span></div>
+    <div class="kpi"><span class="v">13</span><span class="k">oportunidades de economia mapeadas em 1 processo</span></div>
+  </div>
+  <p class="grande">O ciclo completo do método opera em produção: o CFO do cliente entra no hub, vê fluxo atual × proposto, responde o quiz, aprova o plano e acompanha o board de adoção — <strong>não recebe PDF</strong>.</p>
+  <p>Identidade real (magic-link, orgs, RBAC de 5 papéis), mobile, QA adversarial, infraestrutura de automação pronta (desligada por segurança até fechar o cadeado de egress). Um operador BaseIA dentro do cliente — cada intervenção vira template da biblioteca.</p>
+</section>
+
+<!-- S9 · DEFENSÁVEL -->
+<section class="slide" id="s9">
+  <div class="rotulo">09 · Por que é difícil de copiar</div>
+  <h2>Defensável por construção</h2>
+  <div class="grid2">
+    <div class="cartao"><h4>R$ derivado por código</h4><p>Nenhum R$ sai da LLM no board de execução: <em>savings.py</em> calcula de primitivos. Origem: um bug em que a LLM errou uma economia em 60×. A lição virou arquitetura — e nenhum player pesquisado mostra R$/ano determinístico.</p></div>
+    <div class="cartao"><h4>Adoção como objeto de 1ª classe</h4><p>WalkMe mede adoção de software; Tango mede consumo de guia; Scribe mede processo em uso. Adoção de <em>processo com dono e valor</em> segue sem dono no mercado — reconfirmado em jul/2026.</p></div>
+    <div class="cartao"><h4>Arquitetura de confiança</h4><p>"LLM propõe, script decide": sync determinístico, histórico append-only, gates server-side. O pitch técnico é auditabilidade, não mágica.</p></div>
+    <div class="cartao"><h4>O ativo que fica</h4><p>Cada engagement alimenta a biblioteca de templates. Agências de automação têm churn ~11 meses porque prompts são portáveis; biblioteca + histórico de valor medido não são.</p></div>
+  </div>
+</section>
+
+<!-- S10 · MERCADO E JANELAS -->
+<section class="slide" id="s10">
+  <div class="rotulo">10 · Mercado e relógios</div>
+  <h2>Duas janelas abertas — <span class="verde">uma com data</span></h2>
+  <div class="kpis">
+    <div class="kpi"><span class="v">US$ 3,4bi</span><span class="k">TAM IA Brasil 2026 (IDC, +30% a.a.)</span></div>
+    <div class="kpi"><span class="v">R$ 10-30mi</span><span class="k">SOM honesto, bottom-up declarado</span></div>
+    <div class="kpi"><span class="v">12-24m</span><span class="k">janela BR — nenhum global tem GTM local</span></div>
+    <div class="kpi"><span class="v">03/08</span><span class="k">janela fiscal — bloqueio de emissão sem IBS/CBS</span></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>Alternativa na mesa do comprador</th><th class="n">Preço</th><th>O que falta</th></tr>
+    <tr><td>Status quo (Excel + WhatsApp)</td><td class="n">R$ 0 aparente</td><td>Custo real = horas + erro + risco fiscal; o concorrente default</td></tr>
+    <tr><td>Consultoria (Falconi Mid, EloGroup)</td><td class="n">R$ 15-35k/mês</td><td>Sem plataforma, sem R$ determinístico, sem adoção medida</td></tr>
+    <tr><td>BPO financeiro</td><td class="n">R$ 0,5-5k/mês</td><td>Só o financeiro padronizado</td></tr>
+    <tr class="destaque"><td><strong>Contratar analista</strong></td><td class="n">R$ 8-10,5k/mês</td><td>Não escala, não documenta — a âncora verbal do nosso pricing</td></tr>
+  </table></div>
+  <p>72% das médias/grandes despreparadas pra reforma tributária (V360, nov/2025) — a campanha "seus processos estão prontos pra agosto?" vai ao ar antes de 03/08.</p>
+</section>
+
+<!-- S11 · MODELO -->
+<section class="slide escuro" id="s11">
+  <div class="rotulo">11 · Modelo de negócio</div>
+  <h2>Uma escada com gatilhos, <span class="verde">não uma aposta</span></h2>
+  <div class="escada">
+    <div class="degrau">
+      <div class="rot">A<small>AGORA</small></div>
+      <div class="desc"><strong style="color:var(--palco-tinta)">Engagement Premium.</strong> Fee fixo R$ 8-25k/mês por engagement, usuários ilimitados, piloto de 1 processo &lt;90 dias. Fee fixo = número orçável (lição Agentforce: outcome puro travou e recuou).</div>
+      <div class="gat"><b>gatilho</b> imediato · margem 25-40% aceitável nesta fase</div>
+    </div>
+    <div class="degrau">
+      <div class="rot">B1<small>0-6 M</small></div>
+      <div class="desc"><strong style="color:var(--palco-tinta)">+ Garantia de valor.</strong> "Economia validada ≥ N× o fee anual" — testada 1×/ano, régua folgada, zero disputa mensal (estilo Globality).</div>
+      <div class="gat"><b>gatilho</b> valoração das 13 oportunidades do caso âncora (em curso)</div>
+    </div>
+    <div class="degrau">
+      <div class="rot">B2<small>6-18 M</small></div>
+      <div class="desc"><strong style="color:var(--palco-tinta)">+ Success fee.</strong> 15-20% da economia validada em conjunto, cap 2× o fee. A execução direta (runs do catálogo) entra aqui como turbina de margem — a transição Palantir 67,7%→84%.</div>
+      <div class="gat"><b>gatilho</b> value meter em produção + baseline contratual + telemetria de adoção</div>
+    </div>
+    <div class="degrau">
+      <div class="rot">C·D<small>18 M+</small></div>
+      <div class="desc"><strong style="color:var(--palco-tinta)">Franquia de operador certificado → IA-as-a-Service.</strong> Escala sem contratar; D é o teto de valuation, não a receita de 2026-27. A mesma engenharia serve aos dois horizontes.</div>
+      <div class="gat"><b>gatilho</b> placar de autonomia G1-G10 fechado por degrau — critérios objetivos, escritos</div>
+    </div>
+  </div>
+</section>
+
+<!-- S12 · RIGOR -->
+<section class="slide" id="s12">
+  <div class="rotulo">12 · Os números, sem maquiagem</div>
+  <h2>Premissas declaradas — <span class="verde">e critérios de morte</span></h2>
+  <div class="tbl"><table>
+    <tr><th>Cenário</th><th class="n">Margem bruta</th><th>Condição</th></tr>
+    <tr><td>A · fee fixo hoje</td><td class="n">~37% <span class="chip premissa">PREMISSA</span></td><td>~97% do custo é hora de sócio; teto ~7-8 clientes no gargalo atual</td></tr>
+    <tr><td>A · com biblioteca madura</td><td class="n">~68%</td><td>Templates reduzindo horas por entrega — a régua é a derivada, não o nível</td></tr>
+    <tr class="destaque"><td>Conservador (ticket R$ 8k)</td><td class="n"><strong>negativa</strong></td><td>Com sócios a preço de mercado. Declarado no plano — o cenário só existe com pro-labore abaixo do preço.</td></tr>
+  </table></div>
+  <div class="kill"><p><b>K1.</b> Valoração das 13 oportunidades dá pequena → vira consultoria boutique (outro plano).</p></div>
+  <div class="kill"><p><b>K2.</b> 2º cliente não fecha em 2 trimestres → o problema é canal, rediscutir ICP.</p></div>
+  <div class="kill"><p><b>K3.</b> Horas por processo não caem com a biblioteca → o método não compõe.</p></div>
+  <div class="kill"><p><b>K4.</b> Um global mede adoção + valor em moeda antes dos casos âncora → pivô pra líder local BR.</p></div>
+</section>
+
+<!-- S13 · VISÃO -->
+<section class="slide escuro" id="s13">
+  <div class="rotulo">13 · Onde isso vai</div>
+  <h2>O <span class="verde">Lovable</span> dos processos</h2>
+  <p class="grande" style="color:var(--palco-tinta)">Hoje a plataforma diagnostica e o cliente executa. A escada tira a responsabilidade dele, um degrau por vez:</p>
+  <div class="escada">
+    <div class="degrau">
+      <div class="rot">2<small>IMEDIATO</small></div>
+      <div class="desc"><strong style="color:var(--palco-tinta)">Prompt indicativo.</strong> O card entrega o <em>como</em>: prompt + passos + critério de aceite na mão do executor do cliente.</div>
+      <div class="gat"><b>estado</b> já existe no card · falta expor · no plano de 90 dias</div>
+    </div>
+    <div class="degrau">
+      <div class="rot">3·4<small>6-12 M</small></div>
+      <div class="desc"><strong style="color:var(--palco-tinta)">Reuso de templates + execução assistida.</strong> Automações compiladas rodam com review humano — a infra já existe em prod, desligada por segurança.</div>
+      <div class="gat"><b>estado</b> infra pronta · gatilho no 2º cliente</div>
+    </div>
+    <div class="degrau">
+      <div class="rot">5<small>VISÃO</small></div>
+      <div class="desc"><strong style="color:var(--palco-tinta)">Execução direta.</strong> LLM + scripts + biblioteca instalados no cliente; a atividade vira <em>run</em> monitorado com log, status e valor. O agente que captura também <mark>mede o valor realizado</mark> — telemetria de processo, nunca de pessoa.</div>
+      <div class="gat"><b>estado</b> desenho fechado · gatilho: templates provados + contrato operacional</div>
+    </div>
+  </div>
+  <p class="nota" style="margin-top:16px">O flywheel: captura alimenta a biblioteca → a biblioteca executa o que era delegado → a execução gera telemetria de valor → a telemetria vende o próximo processo.</p>
+  <div class="legenda">
+    <div><span class="k">CONTATO</span><span class="v">ROMEU HUNGRIA RECHDAN</span></div>
+    <div><span class="k">PLATAFORMA</span><span class="v">EM PRODUÇÃO · CLIENTE PAGANTE</span></div>
+    <div><span class="k">PLANO COMPLETO</span><span class="v">BUSINESS PLAN 12/07 · DISPONÍVEL SOB PEDIDO</span></div>
+  </div>
+</section>
+
+<div class="contador" id="contador">1 / 13</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const contador=document.getElementById('contador');
+  let atual=0;
+  function irPara(i){
+    atual=Math.max(0,Math.min(slides.length-1,i));
+    slides[atual].scrollIntoView({behavior:'smooth'});
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();irPara(atual+1)}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();irPara(atual-1)}
+  });
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(en=>{
+      if(en.isIntersecting){
+        atual=slides.indexOf(en.target);
+        contador.textContent=(atual+1)+' / '+slides.length;
+      }
+    });
+  },{threshold:.55});
+  slides.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
